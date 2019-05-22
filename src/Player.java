@@ -22,13 +22,35 @@ public abstract class Player {
 		isAlive = true;
 	}
 	
-	/** ACCESSORS **/
-	
 	//post: returns name
 	public String getName() {
 		return name;
 	}
-	
+   
+	//post: returns only the first name
+   	public String getFirstName()
+	{
+		return name.substring(0, name.indexOf(" "));
+	}
+
+	//post: sets first name
+	public void setFirstName(String n)
+	{
+   		name = n + name.substring(name.indexOf(" "));
+	}
+
+	//post: returns only the last name
+	public String getLastName()
+	{
+		return name.substring(name.indexOf(" ")+1);
+	}
+
+	//post: sets only last name
+	public void setLastName(String n)
+	{
+		name=name.substring(0, name.indexOf(" ")+1) + n;
+	}
+   
 	//post: sets name
 	public void setName(String n) {
 		name = n;
