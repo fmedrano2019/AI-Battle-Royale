@@ -183,7 +183,7 @@ public class GUI extends JPanel {
 		for(int r = y - 5; r <= y + 5; r++) {
 			for(int c = x - 5; c <= x + 5; c++) {
 				if(r >= 0 && r < map.length && c >= 0 && c < map[0].length) { //checks if r & c are within bounds
-					if(getSpace(c, r) == 4) //if there is a player
+					if(cells[r][c] == 4 || cells[r][c]==5 || cells[r][c]==6) //if there is a player
 						return true;
 				}
 			}
