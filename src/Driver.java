@@ -1,5 +1,6 @@
 import java.util.*;
 import javax.swing.*;
+import java.awt.Toolkit;
 
 public class Driver {
 	public static void main(String[] args) {
@@ -13,11 +14,13 @@ public class Driver {
 			}
 		}
 		JFrame frame = new JFrame("Battle Royale");
-		frame.setSize(1230, 1000);
+      Toolkit tk = Toolkit.getDefaultToolkit();
+      int xSize = ((int) tk.getScreenSize().getWidth());
+      int ySize = ((int) tk.getScreenSize().getHeight());
+		frame.setSize(xSize, ySize);
 		frame.setLocation(200, 0);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(new GUI());
 		frame.setVisible(true);
-		
 	}
 }
