@@ -7,11 +7,14 @@ public abstract class Player {
 	public int food;
 	public int water;
 	public int energy;
+   public int x;
+   public int y;
 	public boolean isAlive;
 	
 	/** CONSTRUCTORS **/
 	
-	public Player(String n, String t) {
+   //no coordinate constructor
+   public Player(String n, String t) {
 		name = n;
 		type = t;
 		kills = 0;
@@ -21,35 +24,51 @@ public abstract class Player {
 		energy = food + water;
 		isAlive = true;
 	}
+   
+   //constructor with coordinate
+	public Player(String n, String t, int x, int y) {
+		name = n;
+		type = t;
+		kills = 0;
+		xp = 0;
+		food = 50;
+		water = 50;
+		energy = food + water;
+      this.x=x;
+      this.y=y;
+		isAlive = true;
+	}
+	
+	/** ACCESSORS **/
 	
 	//post: returns name
 	public String getName() {
 		return name;
 	}
    
-	//post: returns only the first name
-   	public String getFirstName()
-	{
-		return name.substring(0, name.indexOf(" "));
-	}
-
-	//post: sets first name
-	public void setFirstName(String n)
-	{
-   		name = n + name.substring(name.indexOf(" "));
-	}
-
-	//post: returns only the last name
-	public String getLastName()
-	{
-		return name.substring(name.indexOf(" ")+1);
-	}
-
-	//post: sets only last name
-	public void setLastName(String n)
-	{
-		name=name.substring(0, name.indexOf(" ")+1) + n;
-	}
+   //post: returns only the first name
+   public String getFirstName()
+   {
+      return name.substring(0, name.indexOf(" "));
+   }
+   
+   //post: sets first name
+   public void setFirstName(String n)
+   {
+      name = n + name.substring(name.indexOf(" "));
+   }
+   
+   //post: returns only the last name
+   public String getLastName()
+   {
+      return name.substring(name.indexOf(" ")+1);
+   }
+   
+   //post: sets only last name
+   public void setLastName(String n)
+   {
+      name=name.substring(0, name.indexOf(" ")+1) + n;
+   }
    
 	//post: sets name
 	public void setName(String n) {
@@ -115,6 +134,31 @@ public abstract class Player {
 	public void setEnergy(int e) {
 		energy = e;
 	}
+   
+   //post: returns the x coordinate
+   public int getX()
+   {
+      return x;
+   }
+   
+   //post: sets the x coordinate
+   public void setX(int v)
+   {
+      x=v;
+   }
+   
+   //post: returns the y coordinate
+   public int getY()
+   {
+      return y;
+   }
+   
+   
+   //post: sets the y coordinate
+   public void setY(int v)
+   {
+      y=v;
+   }
 	
 	//post: returns isAlive
 	public boolean getIsAlive() {
@@ -125,6 +169,65 @@ public abstract class Player {
 	public void setIsAlive(boolean a) {
 		isAlive = a;
 	}
+   
+   public int superiorType(Player other)
+   {
+      if(type.equals(other.getType()))
+         return 0;
+      else if((type.equals("S&S")&&other.getType().equals("2H"))||(type.equals("2H")&&other.getType().equals("Dagger"))||(type.equals("Dagger")&&other.getType().equals("S&S")))
+         return 50;
+      else
+         return -50;
+   }
+   
+   public boolean isWinner(Player other)
+   {
+      double score=0;
+      double otherScore=0;
+      
+      int typeWinner=superiorType(other);
+      
+      score+=typeWinner;
+      score+=typeWinner;
+      
+      double energyDifference=0;
+      if(energy>other.getEnergy())
+         energyDifference=energy-other.getEnergy();
+      else
+         energyDifference=other.getEnergy()-energy;
+        
+      
+      
+      score+=energyDifference;
+      otherScore-=energyDifference;
+      
+      if(score>=otherScore)
+         other.setIsAlive(false);
+      else
+         setIsAlive(false);
+         
+      return score>=otherScore;
+   }
+  
+   public void moveUp()
+   {
+      y--;
+   }
+   
+   public void moveDown()
+   {
+      y++;
+   }
+   
+   public void moveLeft()
+   {  
+      x--;
+   }
+   
+   public void moveRight()
+   {
+      x++;
+   }   
 	
 	public String toString() {
 		return name + " (" + type + ") " + ": " + kills;
