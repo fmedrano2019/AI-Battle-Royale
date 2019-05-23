@@ -27,7 +27,7 @@ public class GUI extends JPanel {
 	
 	private ArrayList<Player> players; //stores the players
 	private ArrayList<String> firstNameGen = new ArrayList<String>(); //first name generator
-   private ArrayList<String> lastNameGen=new ArrayList<String>(); //last name generator
+    private ArrayList<String> lastNameGen=new ArrayList<String>(); //last name generator
 	private ArrayList<String> typeGen = new ArrayList<String>(); //type generator
 	
 	public GUI() {
@@ -48,15 +48,15 @@ public class GUI extends JPanel {
 			}
 		}
       
-      waterPlacement();
+      	waterPlacement();
 		
 		firstNameGen(); //adds first names to firstNameGen
-      lastNameGen(); //adds last names to lastNameGen
+      	lastNameGen(); //adds last names to lastNameGen
 		typeGen(); //adds types to typeGen
 		players = new ArrayList<Player>();
 		playerCreation(); // adds players
       
-      playerPlacement(); //generates players
+      	playerPlacement(); //generates players
 		
 		foodPlacement(); //places food
 	
@@ -71,14 +71,14 @@ public class GUI extends JPanel {
 		playerNames = new JList(playerNameList());
 		leaderboard.add(playerNames, BorderLayout.NORTH);
       
-      keyPanel=new JPanel(); //color key
-      keyPanel.setLayout(new GridLayout(7, 2));
-      keyCreation();
-      leaderboard.add(keyPanel, BorderLayout.CENTER);
+      	keyPanel=new JPanel(); //color key
+      	keyPanel.setLayout(new GridLayout(7, 2));
+      	keyCreation();
+      	leaderboard.add(keyPanel, BorderLayout.CENTER);
       		
 		reset = new JButton("Reset");
 		reset.addActionListener(new Reset());
-      leaderboard.add(reset, BorderLayout.SOUTH);
+      	leaderboard.add(reset, BorderLayout.SOUTH);
 	}
 	
    //creates a key for the various colors in the grid
@@ -94,7 +94,7 @@ public class GUI extends JPanel {
       keyPanel.add(cKey[0]);
       
       cList[1]=new JButton();
-      cList[1].setBackground(new Color (255, 140, 0));
+      cList[1].setBackground(new Color (255, 178, 102));
       cKey[1]=new JLabel("Food");
       keyPanel.add(cList[1]);
       keyPanel.add(cKey[1]);
@@ -186,7 +186,7 @@ public class GUI extends JPanel {
 			   y = (int)(Math.random() * map.length);
          }
          cells[y][x]=3;
-         map[y][x].setBackground(new Color (255, 140, 0));
+         map[y][x].setBackground(new Color (255, 178, 102));
       }
    }
    
