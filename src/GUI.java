@@ -151,13 +151,29 @@ public class GUI extends JPanel {
 		for(int c = 0; c < players.size(); c++) {
 			int x = (int)(Math.random() * map.length);
 			int y = (int)(Math.random() * map[0].length);
-			while(x < 0 || x >= map.length || y < 0 || y >= map[0].length || getSpace(x, y) != 0 || detectPlayers(x, y)) { //checks if coordinates are within bounds and aren't on top of water
-				x = (int)(Math.random() * map.length);
-				y = (int)(Math.random() * map[0].length);
+			while(x < 0 || x >= map.length || y < 0 || y >= map[0].length || getSpace(x, y)!=0 || detectPlayers(x, y)) { //checks if coordinates are within bounds and aren't on top of water
+				x = (int)(Math.random() * map[0].length);
+				y = (int)(Math.random() * map.length);
 			} //generates new coordinates
-		
-			cells[y][x] = 4;
-			map[y][x].setBackground(Color.red);
+		   
+         if(players.get(c).getType().equals("Dagger"))
+         {
+			   cells[y][x] = 4;
+            map[y][x].setBackground(Color.red);
+            players.set(c, new Dagger(players.get(c).getName(), x, y));
+         }
+         else if(players.get(c).getType().equals("S&S"))
+         {
+            cells[y][x]=5;
+            map[y][x].setBackground(new Color(0, 255, 255));
+            players.set(c, new SwordAndShield(players.get(c).getName(), x, y));
+         }
+         else
+         {
+            cells[y][x]=6;
+            map[y][x].setBackground(Color.white);
+            players.set(c, new TwoHanded(players.get(c).getName(), x, y));
+         }
 		}
 	}
    
