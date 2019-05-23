@@ -128,6 +128,9 @@ public class GUI extends JPanel {
 		int y = (int)(Math.random() * map.length);
 		int xSize = (int)(Math.random() * 5 + 3); //2 - 6 width
 		int ySize = (int)(Math.random() * 5 + 3); //2 - 6 height
+		while(ySize == xSize) {
+			ySize = (int)(Math.random() * 5 + 3); //2 - 6 height
+		}
 		while(x < 0 || x >= map.length || y < 0 || y >= map[0].length) { //checks if coordinates are within bounds
 			x = (int)(Math.random() * map.length);
 			y = (int)(Math.random() * map[0].length);
