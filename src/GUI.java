@@ -8,13 +8,15 @@ public class GUI extends JPanel {
 	private JButton[][] map;
 	private int[][] cells;
    
-   /*
+   	/*
 	 * 0 = grass
 	 * 1 = water
 	 * 2 = tree
 	 * 3 = food
-	 * 4 = player alive
-	 * 5 = player dead
+	 * 4 = dagger player
+    * 5 = sword and shield player
+    * 6 = two handed sword player
+	 * 7 = player dead
 	*/
 	
 	//leaderboard
@@ -72,7 +74,7 @@ public class GUI extends JPanel {
 		leaderboard.add(playerNames, BorderLayout.NORTH);
       
       	keyPanel=new JPanel(); //color key
-      	keyPanel.setLayout(new GridLayout(7, 2));
+      	keyPanel.setLayout(new GridLayout(8, 2));
       	keyCreation();
       	leaderboard.add(keyPanel, BorderLayout.CENTER);
       		
@@ -84,50 +86,56 @@ public class GUI extends JPanel {
    //creates a key for the various colors in the grid
    public void keyCreation()
    {
-      JButton [] cList=new JButton[7];
-      JLabel [] cKey=new JLabel[7];
+      JButton [] cList=new JButton[8];
+      JLabel [] cKey=new JLabel[8];
       
       cList[0]=new JButton();
-      cList[0].setBackground(Color.blue);
-      cKey[0]=new JLabel("Water");
+      cList[0].setBackground(new Color(47, 230, 36));
+      cKey[0]=new JLabel("Grass");
       keyPanel.add(cList[0]);
       keyPanel.add(cKey[0]);
       
       cList[1]=new JButton();
-      cList[1].setBackground(new Color (255, 178, 102));
-      cKey[1]=new JLabel("Food");
+      cList[1].setBackground(new Color(26, 23, 224));
+      cKey[1]=new JLabel("Water");
       keyPanel.add(cList[1]);
       keyPanel.add(cKey[1]);
       
       cList[2]=new JButton();
-      cList[2].setBackground(new Color(139, 69, 19));
-      cKey[2]=new JLabel("Trees");
+      cList[2].setBackground(new Color (255, 178, 102));
+      cKey[2]=new JLabel("Food");
       keyPanel.add(cList[2]);
       keyPanel.add(cKey[2]);
       
       cList[3]=new JButton();
-      cList[3].setBackground(new Color(205, 92, 92));
-      cKey[3]=new JLabel("Dagger Player");
+      cList[3].setBackground(new Color(139, 69, 19));
+      cKey[3]=new JLabel("Trees");
       keyPanel.add(cList[3]);
       keyPanel.add(cKey[3]);
       
       cList[4]=new JButton();
-      cList[4].setBackground(Color.red);
-      cKey[4]=new JLabel("Sword and Shield Player");
+      cList[4].setBackground(new Color(205, 92, 92));
+      cKey[4]=new JLabel("Dagger Player");
       keyPanel.add(cList[4]);
       keyPanel.add(cKey[4]);
       
       cList[5]=new JButton();
-      cList[5].setBackground(Color.red.darker());
-      cKey[5]=new JLabel("Two Handed Sword Player");
+      cList[5].setBackground(Color.red);
+      cKey[5]=new JLabel("Sword and Shield Player");
       keyPanel.add(cList[5]);
       keyPanel.add(cKey[5]);
       
       cList[6]=new JButton();
-      cList[6].setBackground(Color.black);
-      cKey[6]=new JLabel("Dead Player");
+      cList[6].setBackground(Color.red.darker());
+      cKey[6]=new JLabel("Two Handed Sword Player");
       keyPanel.add(cList[6]);
       keyPanel.add(cKey[6]);
+      
+      cList[7]=new JButton();
+      cList[7].setBackground(Color.black);
+      cKey[7]=new JLabel("Dead Player");
+      keyPanel.add(cList[7]);
+      keyPanel.add(cKey[7]);
    }
    
    //post: generates 20 bodies of water
