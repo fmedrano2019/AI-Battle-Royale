@@ -401,19 +401,19 @@ public class GUI extends JPanel {
       keyPanel.add(cKey[3]);
       
       cList[4]=new JButton();
-      cList[4].setBackground(new Color(205, 92, 92));
+      cList[4].setBackground(Color.red);
       cKey[4]=new JLabel("Dagger Player");
       keyPanel.add(cList[4]);
       keyPanel.add(cKey[4]);
       
       cList[5]=new JButton();
-      cList[5].setBackground(Color.red);
+      cList[5].setBackground(new Color(0, 255, 255));
       cKey[5]=new JLabel("Sword and Shield Player");
       keyPanel.add(cList[5]);
       keyPanel.add(cKey[5]);
       
       cList[6]=new JButton();
-      cList[6].setBackground(Color.red.darker());
+      cList[6].setBackground(Color.white);
       cKey[6]=new JLabel("Two Handed Sword Player");
       keyPanel.add(cList[6]);
       keyPanel.add(cKey[6]);
