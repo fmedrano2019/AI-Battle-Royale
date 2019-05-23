@@ -14,8 +14,8 @@ public class GUI extends JPanel {
 	 * 2 = tree
 	 * 3 = food
 	 * 4 = dagger player
-    * 5 = sword and shield player
-    * 6 = two handed sword player
+   	 * 5 = sword and shield player
+   	 * 6 = two handed sword player
 	 * 7 = player dead
 	*/
 	
@@ -24,12 +24,12 @@ public class GUI extends JPanel {
 	private JList<String> playerNames; //lists player names
 	private JButton reset;
    
-   //color key
-   private JPanel keyPanel;
+ 	//color key
+ 	private JPanel keyPanel;
 	
 	private ArrayList<Player> players; //stores the players
 	private ArrayList<String> firstNameGen = new ArrayList<String>(); //first name generator
-    private ArrayList<String> lastNameGen=new ArrayList<String>(); //last name generator
+   	private ArrayList<String> lastNameGen=new ArrayList<String>(); //last name generator
 	private ArrayList<String> typeGen = new ArrayList<String>(); //type generator
 	
 	public GUI() {
@@ -50,7 +50,8 @@ public class GUI extends JPanel {
 			}
 		}
       
-      	waterPlacement();
+      		waterPlacement(); //generates bodies of water
+		treePlacement(); //generates trees
 		
 		firstNameGen(); //adds first names to firstNameGen
       	lastNameGen(); //adds last names to lastNameGen
@@ -82,61 +83,6 @@ public class GUI extends JPanel {
 		reset.addActionListener(new Reset());
       	leaderboard.add(reset, BorderLayout.SOUTH);
 	}
-	
-   //creates a key for the various colors in the grid
-   public void keyCreation()
-   {
-      JButton [] cList=new JButton[8];
-      JLabel [] cKey=new JLabel[8];
-      
-      cList[0]=new JButton();
-      cList[0].setBackground(new Color(47, 230, 36));
-      cKey[0]=new JLabel("Grass");
-      keyPanel.add(cList[0]);
-      keyPanel.add(cKey[0]);
-      
-      cList[1]=new JButton();
-      cList[1].setBackground(new Color(26, 23, 224));
-      cKey[1]=new JLabel("Water");
-      keyPanel.add(cList[1]);
-      keyPanel.add(cKey[1]);
-      
-      cList[2]=new JButton();
-      cList[2].setBackground(new Color (255, 178, 102));
-      cKey[2]=new JLabel("Food");
-      keyPanel.add(cList[2]);
-      keyPanel.add(cKey[2]);
-      
-      cList[3]=new JButton();
-      cList[3].setBackground(new Color(139, 69, 19));
-      cKey[3]=new JLabel("Trees");
-      keyPanel.add(cList[3]);
-      keyPanel.add(cKey[3]);
-      
-      cList[4]=new JButton();
-      cList[4].setBackground(new Color(205, 92, 92));
-      cKey[4]=new JLabel("Dagger Player");
-      keyPanel.add(cList[4]);
-      keyPanel.add(cKey[4]);
-      
-      cList[5]=new JButton();
-      cList[5].setBackground(Color.red);
-      cKey[5]=new JLabel("Sword and Shield Player");
-      keyPanel.add(cList[5]);
-      keyPanel.add(cKey[5]);
-      
-      cList[6]=new JButton();
-      cList[6].setBackground(Color.red.darker());
-      cKey[6]=new JLabel("Two Handed Sword Player");
-      keyPanel.add(cList[6]);
-      keyPanel.add(cKey[6]);
-      
-      cList[7]=new JButton();
-      cList[7].setBackground(Color.black);
-      cKey[7]=new JLabel("Dead Player");
-      keyPanel.add(cList[7]);
-      keyPanel.add(cKey[7]);
-   }
    
    //post: generates 20 bodies of water
 	public void waterPlacement() {
@@ -166,7 +112,37 @@ public class GUI extends JPanel {
 		}
 	}
    
-   //post: places players on the map
+	//generates 15 - 20 tree bodies
+	public void treePlacement() {
+		int num = (int)(Math.random() * 6 + 15); //number of bodies of trees 15-20
+		for(int c = 0; c < num; c++) {
+			treeBodyGen();
+		}
+	}
+
+	//method of treePlacement()
+	//post: generates a 3/6x3/6 tree block
+	private void treeBodyGen() {
+		int x = (int)(Math.random() * map[0].length);
+		int y = (int)(Math.random() * map.length);
+		int xSize = (int)(Math.random() * 5 + 3); //2 - 6 width
+		int ySize = (int)(Math.random() * 5 + 3); //2 - 6 height
+		while(x < 0 || x >= map.length || y < 0 || y >= map[0].length) { //checks if coordinates are within bounds
+			x = (int)(Math.random() * map.length);
+			y = (int)(Math.random() * map[0].length);
+		} //generates new coordinates
+
+		for(int r = y; r < y + ySize; r++) {
+			for(int c = x ; c < x + xSize; c++) {
+				if(r < map.length && c < map[0].length && cells[r][c] != 1) { //checks if r & c are within bounds
+					map[r][c].setBackground(new Color(139, 69, 19));
+					cells[r][c] = 2;
+				}
+			}
+		}
+	}
+	
+   	//post: places players on the map
 	public void playerPlacement() {
 		for(int c = 0; c < players.size(); c++) {
 			int x = (int)(Math.random() * map.length);
@@ -204,7 +180,7 @@ public class GUI extends JPanel {
 		for(int r = y - 5; r <= y + 5; r++) {
 			for(int c = x - 5; c <= x + 5; c++) {
 				if(r >= 0 && r < map.length && c >= 0 && c < map[0].length) { //checks if r & c are within bounds
-					if(cells[r][c] == 4) //if there is a player
+					if(getSpace(c, r) == 4) //if there is a player
 						return true;
 				}
 			}
@@ -215,7 +191,7 @@ public class GUI extends JPanel {
 	
 	public int getSpace(int x, int y)
     {
-      if(x>=0&&x<map[0].length&&y>=0&&y<map.length)
+      if(x >= 0 && x < map[0].length && y >= 0 && y < map.length)
          return cells[y][x];
       else
          return -1;
@@ -392,6 +368,61 @@ public class GUI extends JPanel {
 		
 		return count;
 	}
+	
+	//creates a key for the various colors in the grid
+   public void keyCreation()
+   {
+      JButton [] cList=new JButton[8];
+      JLabel [] cKey=new JLabel[8];
+      
+      cList[0]=new JButton();
+      cList[0].setBackground(new Color(47, 230, 36));
+      cKey[0]=new JLabel("Grass");
+      keyPanel.add(cList[0]);
+      keyPanel.add(cKey[0]);
+      
+      cList[1]=new JButton();
+      cList[1].setBackground(new Color(26, 23, 224));
+      cKey[1]=new JLabel("Water");
+      keyPanel.add(cList[1]);
+      keyPanel.add(cKey[1]);
+      
+      cList[2]=new JButton();
+      cList[2].setBackground(new Color (255, 178, 102));
+      cKey[2]=new JLabel("Food");
+      keyPanel.add(cList[2]);
+      keyPanel.add(cKey[2]);
+      
+      cList[3]=new JButton();
+      cList[3].setBackground(new Color(139, 69, 19));
+      cKey[3]=new JLabel("Trees");
+      keyPanel.add(cList[3]);
+      keyPanel.add(cKey[3]);
+      
+      cList[4]=new JButton();
+      cList[4].setBackground(new Color(205, 92, 92));
+      cKey[4]=new JLabel("Dagger Player");
+      keyPanel.add(cList[4]);
+      keyPanel.add(cKey[4]);
+      
+      cList[5]=new JButton();
+      cList[5].setBackground(Color.red);
+      cKey[5]=new JLabel("Sword and Shield Player");
+      keyPanel.add(cList[5]);
+      keyPanel.add(cKey[5]);
+      
+      cList[6]=new JButton();
+      cList[6].setBackground(Color.red.darker());
+      cKey[6]=new JLabel("Two Handed Sword Player");
+      keyPanel.add(cList[6]);
+      keyPanel.add(cKey[6]);
+      
+      cList[7]=new JButton();
+      cList[7].setBackground(Color.black);
+      cKey[7]=new JLabel("Dead Player");
+      keyPanel.add(cList[7]);
+      keyPanel.add(cKey[7]);
+   }
 	
 	//reset button
 	private class Reset implements ActionListener {
