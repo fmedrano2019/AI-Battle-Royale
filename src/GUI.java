@@ -134,7 +134,7 @@ public class GUI extends JPanel {
 
 		for(int r = y; r < y + ySize; r++) {
 			for(int c = x ; c < x + xSize; c++) {
-				if(r < map.length && c < map[0].length && cells[r][c] != 1) { //checks if r & c are within bounds
+				if(r < map.length && c < map[0].length && getSpace(c, r) != 1) { //checks if r & c are within bounds
 					map[r][c].setBackground(new Color(139, 69, 19));
 					cells[r][c] = 2;
 				}
