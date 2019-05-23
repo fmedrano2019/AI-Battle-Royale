@@ -20,7 +20,6 @@ public class GUI extends JPanel {
 	*/
 	
 	//leaderboard
-	private JLabel numPlayers; //shows number of players alive
 	private JList<String> playerNames; //lists player names
 	private JButton reset;
    
@@ -149,7 +148,7 @@ public class GUI extends JPanel {
 		for(int c = 0; c < players.size(); c++) {
 			int x = (int)(Math.random() * map.length);
 			int y = (int)(Math.random() * map[0].length);
-			while(x < 0 || x >= map.length || y < 0 || y >= map[0].length || getSpace(x, y)!=0 || detectPlayers(x, y)) { //checks if coordinates are within bounds and aren't on top of water
+			while(x < 0 || x >= map.length || y < 0 || y >= map[0].length || getSpace(x, y) != 0 || detectPlayers(x, y)) { //checks if coordinates are within bounds and aren't on top of water
 				x = (int)(Math.random() * map.length);
 				y = (int)(Math.random() * map[0].length);
 			} //generates new coordinates
@@ -158,23 +157,6 @@ public class GUI extends JPanel {
 			map[y][x].setBackground(Color.red);
 		}
 	}
-	
-	//post: places food on the map
-   public void foodPlacement()
-   {
-      for(int i=0; i<3; i++)
-      {
-         int x = (int)(Math.random() * map[0].length);
-			int y = (int)(Math.random() * map.length);
-         while(x<0||x>=map[0].length||y<0||y>=map.length||getSpace(x, y)!=0)
-         {
-            x = (int)(Math.random() * map[0].length);
-			   y = (int)(Math.random() * map.length);
-         }
-         cells[y][x]=3;
-         map[y][x].setBackground(new Color (255, 178, 102));
-      }
-   }
    
    //method of playerPlacement()
 	//post: returns if there is a player within a 5x5 square of the given coordinates
@@ -191,21 +173,38 @@ public class GUI extends JPanel {
 		return false;
 	}
 	
+	public void foodPlacement()
+	{
+		for(int i = 0; i < 3; i++)
+		{
+			int x = (int)(Math.random() * map[0].length);
+			int y = (int)(Math.random() * map.length);
+			while(x < 0 || x >= map[0].length || y < 0 || y >= map.length || getSpace(x, y) != 0)
+			{
+				x = (int)(Math.random() * map[0].length);
+				y = (int)(Math.random() * map.length);
+			}
+			cells[y][x] = 3;
+			map[y][x].setBackground(new Color (255, 178, 102));
+		}
+	}
+	
 	public int getSpace(int x, int y)
-    {
-      if(x >= 0 && x < map[0].length && y >= 0 && y < map.length)
-         return cells[y][x];
-      else
-         return -1;
-    }
+	{
+		if(x >= 0 && x < map[0].length && y >= 0 && y < map.length)
+			return cells[y][x];
+		else
+			return -1;
+	}
    
 	//post: returns an array of the player names
 	public String[] playerNameList() {
-		String[] n = new String[players.size()];
-		for(int c = 0; c < players.size(); c++) {
+		String[] n = new String[players.size() + 1];
+		n[0] = "Number of players left: " + countAlive();
+		for(int c = 1; c < players.size(); c++) {
 			n[c] = players.get(c).toString();
 		}
-		
+
 		return n;
 	}
 	
@@ -431,7 +430,6 @@ public class GUI extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			players.clear(); //clears all players
 			playerCreation(); //adds 20 players
-			numPlayers.setText("Number of players left: " + countAlive());
 			playerNames.setListData(playerNameList());
 			
 			for(int r = 0; r < map.length; r++) {
@@ -441,7 +439,8 @@ public class GUI extends JPanel {
 				}
 			} //clears map
 			waterPlacement(); //generates bodies of water
-			playerPlacement();
+			treePlacement(); //generates trees
+			playerPlacement(); //generates player
 		}
 	}
 }
