@@ -149,7 +149,7 @@ public class GUI extends JPanel {
 		for(int c = 0; c < players.size(); c++) {
 			int x = (int)(Math.random() * map.length);
 			int y = (int)(Math.random() * map[0].length);
-			while(x < 0 || x >= map.length || y < 0 || y >= map[0].length || cells[y][x] == 1 || detectPlayers(x, y)) { //checks if coordinates are within bounds and aren't on top of water
+			while(x < 0 || x >= map.length || y < 0 || y >= map[0].length || getSpace(x, y)!=0 || detectPlayers(x, y)) { //checks if coordinates are within bounds and aren't on top of water
 				x = (int)(Math.random() * map.length);
 				y = (int)(Math.random() * map[0].length);
 			} //generates new coordinates
