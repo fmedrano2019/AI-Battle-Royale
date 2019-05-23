@@ -58,6 +58,9 @@ public class GUI extends JPanel {
       
       playerPlacement(); //generates players
 		
+		foodPlacement(); //places food
+	
+		
 		JPanel leaderboard = new JPanel(); //leaderboard
 		leaderboard.setLayout(new BorderLayout());
 		add(leaderboard, BorderLayout.EAST);
@@ -169,6 +172,23 @@ public class GUI extends JPanel {
 			map[y][x].setBackground(Color.red);
 		}
 	}
+	
+	//post: places food on the map
+   public void foodPlacement()
+   {
+      for(int i=0; i<3; i++)
+      {
+         int x = (int)(Math.random() * map[0].length);
+			int y = (int)(Math.random() * map.length);
+         while(x<0||x>=map[0].length||y<0||y>=map.length||getSpace(x, y)!=0)
+         {
+            x = (int)(Math.random() * map[0].length);
+			   y = (int)(Math.random() * map.length);
+         }
+         cells[y][x]=3;
+         map[y][x].setBackground(new Color (255, 140, 0));
+      }
+   }
    
    //method of playerPlacement()
 	//post: returns if there is a player within a 5x5 square of the given coordinates
@@ -184,6 +204,14 @@ public class GUI extends JPanel {
 		
 		return false;
 	}
+	
+	public int getSpace(int x, int y)
+    {
+      if(x>=0&&x<map[0].length&&y>=0&&y<map.length)
+         return cells[y][x];
+      else
+         return -1;
+    }
    
 	//post: returns an array of the player names
 	public String[] playerNameList() {
