@@ -97,13 +97,15 @@ public class GUI extends JPanel {
 	private void waterBodyGen() {
 		int x = (int)(Math.random() * map.length);
 		int y = (int)(Math.random() * map[0].length);
+		int size = (int)(Math.random() * 4 + 5); //5 - 8 size
+
 		while(x < 0 || x >= map.length || y < 0 || y >= map[0].length || cells[y][x] == 1) { //checks if coordinates are within bounds and aren't on top of water
 			x = (int)(Math.random() * map.length);
 			y = (int)(Math.random() * map[0].length);
 		} //generates new coordinates
 		
-		for(int r = y; r < y + 5; r++) {
-			for(int c = x ; c < x + 5; c++) {
+		for(int r = y; r < y + size; r++) {
+			for(int c = x ; c < x + size; c++) {
 				if(r < map.length && c < map[0].length) { //checks if r & c are within bounds
 					map[r][c].setBackground(new Color(26, 23, 224));
 					cells[r][c] = 1;
