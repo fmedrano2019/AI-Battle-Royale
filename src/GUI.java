@@ -92,8 +92,8 @@ public class GUI extends JPanel {
 		}
 	}
    
-   //method of waterGen()
-	//post: generates a 4x4 body of water
+   //method of waterPlacement()
+	//post: generates a 5x5 to 8x8 body of water
 	private void waterBodyGen() {
 		int x = (int)(Math.random() * map.length);
 		int y = (int)(Math.random() * map[0].length);
