@@ -1,20 +1,21 @@
+import java.util.*;
 import java.awt.*;
 import javax.swing.*;
 
 public abstract class Player {
 	
-	public String name;
-	public String type;
-	public int kills;
-	public int xp;
-	public int food;
-	public int water;
-	public int energy;
-	public int x;
-	public int y;
-	public boolean isAlive;
-	public boolean active;
-	public int[][] nearby = new int[121][3];
+	protected String name;
+	protected String type;
+	protected int kills;
+	protected int xp;
+	protected int food;
+	protected int water;
+	protected int energy;
+	protected int x;
+	protected int y;
+	protected boolean isAlive;
+	protected boolean active;
+   protected int [][] nearby=new int[121][3];
 	
 	/** CONSTRUCTORS **/
 	
@@ -309,10 +310,10 @@ public abstract class Player {
 		energy+=20;
 		xp += 10;
 	}   
-
+   
 	public abstract Color getColor();
-	
-	public int[][] sight() {
+   
+   public int[][] sight() {
 		int [][] cells=GUI.getCells();
 		int count = 0;
 		for(int r = y - 5; r <= y + 5; r++) {
@@ -328,6 +329,79 @@ public abstract class Player {
 		
 		return nearby;
 	}
+   
+   public void decision()
+   {
+      if(food < 30 || water < 30) //if needs food/water
+      {
+         if(food<water) //if food < water
+         {
+            if(GUI.detectFood(x, y)) //if food is right next to player
+            {
+               eat();
+               active=false; 
+            }
+            else //if food isn't right next to player
+            {
+               ArrayList<int[]> nearbyFood = new ArrayList<int[]>();
+               for(int c = 0; c < nearby.length; c++) { //checks if there's food in sight
+                  if(nearby[c][2] == 3)
+                     nearbyFood.add(new int[]{nearby[c][0], nearby[c][1]});
+               }
+               if(nearbyFood.size()>=1) //nearby food is located
+               {
+                  int xMinDifference=Math.abs(x-nearbyFood.get(0)[0]);
+                  int yMinDifference=Math.abs(y-nearbyFood.get(0)[1]);
+                  int distance=xMinDifference+yMinDifference;
+                  int xMin=nearbyFood.get(0)[0];
+                  int yMin=nearbyFood.get(0)[1];
+                  for(int i=1; i<nearbyFood.size(); i++)
+                  {
+                     xMinDifference=Math.abs(x-nearbyFood.get(i)[0]);
+                     yMinDifference=Math.abs(y-nearbyFood.get(i)[1]);
+                     if(xMinDifference+yMinDifference<distance)
+                     {
+                        xMin=nearbyFood.get(i)[0];
+                        yMin=nearbyFood.get(i)[1];
+                        distance=xMinDifference+yMinDifference;
+                     }
+                  }
+                  if(xMinDifference<yMinDifference)
+                  {
+                     if(xMin<x)
+                        moveLeft();
+                     else
+                        moveRight();
+                  }
+                  else
+                  {
+                     if(yMin<y)
+                        moveUp();
+                     else
+                        moveDown();
+                  }
+               }
+                  
+               else //there is no nearby food, the player moves randomly
+               {
+   					int movement = (int)(Math.random() * 4 + 1);
+   					if(active) 
+                  {
+   						if(movement == 1)
+   							moveUp();
+   						else if(movement == 2)
+   							moveDown();
+   						else if(movement == 3)
+   							moveLeft();
+   						else
+   							moveRight();
+                  }
+					}
+				}
+         }
+      }
+   }
+         
 	
 	public String toString() {
 		return name + " (" + type + ") " + ": " + kills + " - Food: " + food + " - Water: " + water + " - XP: " + xp;

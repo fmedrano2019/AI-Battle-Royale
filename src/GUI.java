@@ -89,6 +89,8 @@ public class GUI extends JPanel {
 					if(players.get(j).getFood() <= 0 || players.get(j).getWater() <= 0 || players.get(j).getEnergy() <= 0)
 						players.get(j).setAlive(false);
 				}
+             
+            
 				for(int i=0; i<players.size(); i++) //entire loop for players fighting each other
 				{
 					for(int j=0; j<players.size(); j++)
@@ -150,7 +152,6 @@ public class GUI extends JPanel {
 							players.get(c).moveRight();
 					}
 				}
-				//eat, drink, move time
 
 				foodPlacement();
 				playerNames.setListData(playerNameList());
@@ -314,7 +315,7 @@ public class GUI extends JPanel {
 		}
 	}
 	
-	public boolean detectFood(int x, int y)
+	public static boolean detectFood(int x, int y)
 	{
 		for(int r = y - 1; r <= y + 1; r++) {
 			for(int c = x - 1; c <= x + 1; c++) {
