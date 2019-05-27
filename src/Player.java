@@ -14,6 +14,7 @@ public abstract class Player {
 	public int y;
 	public boolean isAlive;
 	public boolean active;
+	public int[][] nearby = new int[121][3];
 	
 	/** CONSTRUCTORS **/
 	
@@ -310,6 +311,23 @@ public abstract class Player {
 	}   
 
 	public abstract Color getColor();
+	
+	public int[][] sight() {
+		int [][] cells=GUI.getCells();
+		int count = 0;
+		for(int r = y - 5; r <= y + 5; r++) {
+			for(int c = x - 5; c <= x + 5; c++) {
+				if(r >= 0 && r < cells.length && c >= 0 && c < cells[0].length) { //checks if r & c are within bounds
+					nearby[count][0]=c;
+					nearby[count][1]=r;
+					nearby[count][2]=GUI.getSpace(c, r);
+				}
+				count++;
+			}
+		}
+		
+		return nearby;
+	}
 	
 	public String toString() {
 		return name + " (" + type + ") " + ": " + kills + " - Food: " + food + " - Water: " + water + " - XP: " + xp;
