@@ -1,4 +1,8 @@
-public abstract class Player {
+import java.awt.*;
+import javax.swing.*;
+
+public abstract class Player
+{
 	
 	public String name;
 	public String type;
@@ -20,8 +24,8 @@ public abstract class Player {
 		type = t;
 		kills = 0;
 		xp = 0;
-		food = 50;
-		water = 50;
+		food = 40;
+		water = 60;
 		energy = food + water;
 		isAlive = true;
       active = true;
@@ -33,8 +37,8 @@ public abstract class Player {
 		type = t;
 		kills = 0;
 		xp = 0;
-		food = 50;
-		water = 50;
+		food = 40;
+		water = 60;
 		energy = food + water;
       this.x=x;
       this.y=y;
@@ -233,25 +237,80 @@ public abstract class Player {
    }
   
    public void moveUp()
-   {
-      y--;
+   {  
+      int [][] cells=GUI.getCells();
+      JButton [][] map=GUI.getMap();
+      if(y > 0 && GUI.getSpace(x, y-1)==0)
+      {
+         cells[y-1][x] = GUI.getSpace(x, y);
+         cells[y][x] = 0;
+         map[y][x].setBackground(new Color(47, 230, 36));
+         map[y-1][x].setBackground(this.getColor());
+         y--;
+      }
    }
    
    public void moveDown()
    {
-      y++;
+      int [][] cells=GUI.getCells();
+      JButton [][] map=GUI.getMap();
+      if(y < map.length-1 && GUI.getSpace(x, y+1)==0)
+      {
+         cells[y+1][x] = GUI.getSpace(x, y);
+         cells[y][x] = 0;
+         map[y][x].setBackground(new Color(47, 230, 36));
+         map[y+1][x].setBackground(this.getColor());
+         y++;
+      }
    }
    
    public void moveLeft()
    {  
-      x--;
+      int [][] cells=GUI.getCells();
+      JButton [][] map=GUI.getMap();
+      if(x > 0 && GUI.getSpace(x-1, y)==0)
+      {
+         cells[y][x-1] = GUI.getSpace(x, y);
+         cells[y][x] = 0;
+         map[y][x].setBackground(new Color(47, 230, 36));
+         map[y][x-1].setBackground(this.getColor());
+         x--;
+      }
    }
    
    public void moveRight()
    {
-      x++;
+      int [][] cells=GUI.getCells();
+      JButton [][] map=GUI.getMap();
+      if(x < map[0].length-1 && GUI.getSpace(x+1, y)==0)
+      {
+         cells[y][x+1] = GUI.getSpace(x, y);
+         cells[y][x] = 0;
+         map[y][x].setBackground(new Color(47, 230, 36));
+         map[y][x+1].setBackground(this.getColor());
+         x++;
+      }
+   }
+   
+   
+   public void eat()
+   {
+      food+=15;
+      energy+=15;
+      JButton [][] map=GUI.getMap();
+      map[y][x].setBackground(new Color(47, 230, 36));
+      int [][] cells=GUI.getCells();
+      cells[y][x]=0;
+   }
+   
+   public void drink()
+   {
+      water+=20;
+      energy+=20;
    }   
 	
+   public abstract Color getColor();
+   
 	public String toString() {
 		return name + " (" + type + ") " + ": " + kills;
 	}
