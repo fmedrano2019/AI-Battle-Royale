@@ -306,12 +306,14 @@ public abstract class Player
    {
       food+=15;
       energy+=15;
+      xp += 5;
    }
    
    public void drink()
    {
       water+=20;
       energy+=20;
+      xp += 10;
    }   
 	
    public abstract Color getColor();
