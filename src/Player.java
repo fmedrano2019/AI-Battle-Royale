@@ -104,7 +104,7 @@ public abstract class Player
 	
 	//post: returns xp
 	public int getXP() {
-		return kills;
+		return xp;
 	}
 	
 	//post: sets xp
@@ -141,6 +141,10 @@ public abstract class Player
 	public void setEnergy(int e) {
 		energy = e;
 	}
+	
+	public void setEnergy() {
+		energy = water + food;
+	}
    
    //post: returns the x coordinate
    public int getX()
@@ -175,6 +179,11 @@ public abstract class Player
 	//post: sets isAlive
 	public void setAlive(boolean a) {
 		isAlive = a;
+		if(!a) {
+			active = false;
+			GUI.cells[y][x] = 7;
+			GUI.map[y][x].setBackground(Color.black);
+		}
 	}
    
    //post: returns true if the player has not done something that turn yet, false if they have
@@ -297,10 +306,6 @@ public abstract class Player
    {
       food+=15;
       energy+=15;
-      JButton [][] map=GUI.getMap();
-      map[y][x].setBackground(new Color(47, 230, 36));
-      int [][] cells=GUI.getCells();
-      cells[y][x]=0;
    }
    
    public void drink()
@@ -312,6 +317,6 @@ public abstract class Player
    public abstract Color getColor();
    
 	public String toString() {
-		return name + " (" + type + ") " + ": " + kills;
+		return name + " (" + type + ") " + ": " + kills + " - Food: " + food + " - Water: " + water + " - XP: " + xp;
 	}
 }
