@@ -2,33 +2,37 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class GUI extends JPanel {
 	//area
 	private JButton[][] map;
 	private int[][] cells;
    
-   	/*
+   /*
 	 * 0 = grass
 	 * 1 = water
 	 * 2 = tree
 	 * 3 = food
 	 * 4 = dagger player
-   	 * 5 = sword and shield player
-   	 * 6 = two handed sword player
+    * 5 = sword and shield player
+    * 6 = two handed sword player
 	 * 7 = player dead
 	*/
 	
 	//leaderboard
+	private JLabel numPlayers; //shows number of players alive
 	private JList<String> playerNames; //lists player names
 	private JButton reset;
    
- 	//color key
- 	private JPanel keyPanel;
+   //color key
+   private JPanel keyPanel;
 	
 	private ArrayList<Player> players; //stores the players
 	private ArrayList<String> firstNameGen = new ArrayList<String>(); //first name generator
-   	private ArrayList<String> lastNameGen=new ArrayList<String>(); //last name generator
+   private ArrayList<String> lastNameGen=new ArrayList<String>(); //last name generator
 	private ArrayList<String> typeGen = new ArrayList<String>(); //type generator
 	
 	public GUI() {
@@ -49,39 +53,143 @@ public class GUI extends JPanel {
 			}
 		}
       
-      		waterPlacement(); //generates bodies of water
-		treePlacement(); //generates trees
+      waterPlacement();
+      treePlacement();
 		
 		firstNameGen(); //adds first names to firstNameGen
-      	lastNameGen(); //adds last names to lastNameGen
+      lastNameGen(); //adds last names to lastNameGen
 		typeGen(); //adds types to typeGen
 		players = new ArrayList<Player>();
 		playerCreation(); // adds players
       
-      	playerPlacement(); //generates players
-		
-		foodPlacement(); //places food
-	
+      playerPlacement(); //generates players
+      
+      foodPlacement(); //places food
 		
 		JPanel leaderboard = new JPanel(); //leaderboard
 		leaderboard.setLayout(new BorderLayout());
 		add(leaderboard, BorderLayout.EAST);
-		
-		numPlayers = new JLabel("Number of players left: " + countAlive());
-		leaderboard.add(numPlayers, BorderLayout.NORTH);
-		
+				
 		playerNames = new JList(playerNameList());
 		leaderboard.add(playerNames, BorderLayout.NORTH);
       
-      	keyPanel=new JPanel(); //color key
-      	keyPanel.setLayout(new GridLayout(8, 2));
-      	keyCreation();
-      	leaderboard.add(keyPanel, BorderLayout.CENTER);
+      keyPanel=new JPanel(); //color key
+      keyPanel.setLayout(new GridLayout(8, 2));
+      keyCreation();
+      leaderboard.add(keyPanel, BorderLayout.CENTER);
       		
 		reset = new JButton("Reset");
 		reset.addActionListener(new Reset());
-      	leaderboard.add(reset, BorderLayout.SOUTH);
+      leaderboard.add(reset, BorderLayout.SOUTH);
+      
+      Timer t=new Timer();
+            
+      while(countAlive()>1)
+      {
+         t.schedule(new TimerTask() 
+         { 
+            public void run()
+            {
+               for(int i=0; i<players.size(); i++) //entire loop for players fighting each other
+               {
+                  for(int j=0; j<players.size(); j++)
+                  {
+                     if(players.get(i).isActive()&&players.get(j).isActive())
+                     {
+                        if(fightingDistance(players.get(j).getX(), players.get(j).getY(), players.get(i).getX(), players.get(i).getY()))
+                        {
+                           if(players.get(j).isWinner(players.get(i)))
+                           {
+                              players.get(i).setAlive(false);
+                              players.get(i).setActive(false);
+                              players.get(j).setActive(false);
+                              map[players.get(i).getY()][players.get(i).getX()].setBackground(Color.black);
+                              players.get(j).setXP(players.get(j).getXP()+100);
+                           }
+                           else 
+                           {
+                              players.get(j).setAlive(false);
+                              players.get(j).setActive(false);
+                              players.get(i).setActive(false);
+                              map[players.get(j).getY()][players.get(j).getX()].setBackground(Color.black);
+                              players.get(i).setXP(players.get(i).getXP()+100);
+                           }
+                        }
+                     }
+                  }
+               }
+               //eat, drink, move time
+               
+               foodPlacement();
+               
+               for(int i=0; i<players.size(); i++) //makes players active for the next turn
+               {
+                  if(players.get(i).isAlive())
+                     players.get(i).setActive(true);
+                  players.get(i).setXP(players.get(i).getXP()+1);
+                  players.get(i).setFood(players.get(i).getFood()-1);
+                  players.get(i).setWater(players.get(i).getWater()-1);
+               }
+            } 
+         }
+         , 10000);
+      }
 	}
+	
+   //creates a key for the various colors in the grid
+   public void keyCreation()
+   {
+      JButton [] cList=new JButton[8];
+      JLabel [] cKey=new JLabel[8];
+      
+      cList[0]=new JButton();
+      cList[0].setBackground(new Color(47, 230, 36));
+      cKey[0]=new JLabel("Grass");
+      keyPanel.add(cList[0]);
+      keyPanel.add(cKey[0]);
+      
+      cList[1]=new JButton();
+      cList[1].setBackground(new Color(26, 23, 224));
+      cKey[1]=new JLabel("Water");
+      keyPanel.add(cList[1]);
+      keyPanel.add(cKey[1]);
+      
+      cList[2]=new JButton();
+      cList[2].setBackground(new Color (255, 178, 102));
+      cKey[2]=new JLabel("Food");
+      keyPanel.add(cList[2]);
+      keyPanel.add(cKey[2]);
+      
+      cList[3]=new JButton();
+      cList[3].setBackground(new Color(139, 69, 19));
+      cKey[3]=new JLabel("Trees");
+      keyPanel.add(cList[3]);
+      keyPanel.add(cKey[3]);
+      
+      cList[4]=new JButton();
+      cList[4].setBackground(Color.red);
+      cKey[4]=new JLabel("Dagger Player");
+      keyPanel.add(cList[4]);
+      keyPanel.add(cKey[4]);
+      
+      cList[5]=new JButton();
+      cList[5].setBackground(new Color(0, 255, 255));
+      cKey[5]=new JLabel("Sword and Shield Player");
+      keyPanel.add(cList[5]);
+      keyPanel.add(cKey[5]);
+      
+      cList[6]=new JButton();
+      cList[6].setBackground(Color.white);
+      cKey[6]=new JLabel("Two Handed Sword Player");
+      keyPanel.add(cList[6]);
+      keyPanel.add(cKey[6]);
+      
+      cList[7]=new JButton();
+      cList[7].setBackground(Color.black);
+      cKey[7]=new JLabel("Dead Player");
+      keyPanel.add(cList[7]);
+      keyPanel.add(cKey[7]);
+   }
    
    //post: generates 20 bodies of water
 	public void waterPlacement() {
@@ -93,19 +201,24 @@ public class GUI extends JPanel {
    
    //method of waterPlacement()
 	//post: generates a 5x5 to 8x8 body of water
-	private void waterBodyGen() {
+	private void waterBodyGen() 
+   {
 		int x = (int)(Math.random() * map.length);
 		int y = (int)(Math.random() * map[0].length);
 		int size = (int)(Math.random() * 4 + 5); //5 - 8 size
 
-		while(x < 0 || x >= map.length || y < 0 || y >= map[0].length || cells[y][x] == 1) { //checks if coordinates are within bounds and aren't on top of water
+		while(x < 0 || x >= map.length || y < 0 || y >= map[0].length || cells[y][x] == 1) //checks if coordinates are within bounds and aren't on top of water
+      {
 			x = (int)(Math.random() * map.length);
 			y = (int)(Math.random() * map[0].length);
 		} //generates new coordinates
 		
-		for(int r = y; r < y + size; r++) {
-			for(int c = x ; c < x + size; c++) {
-				if(r < map.length && c < map[0].length) { //checks if r & c are within bounds
+		for(int r = y; r < y + size; r++) 
+      {
+			for(int c = x ; c < x + size; c++) 
+         {
+				if(r < map.length && c < map[0].length) //checks if r & c are within bounds
+            {
 					map[r][c].setBackground(new Color(26, 23, 224));
 					cells[r][c] = 1;
 				}
@@ -113,8 +226,7 @@ public class GUI extends JPanel {
 		}
 	}
    
-	//generates 15 - 20 tree bodies
-	public void treePlacement() {
+   public void treePlacement() {
 		int num = (int)(Math.random() * 6 + 15); //number of bodies of trees 15-20
 		for(int c = 0; c < num; c++) {
 			treeBodyGen();
@@ -145,8 +257,8 @@ public class GUI extends JPanel {
 			}
 		}
 	}
-	
-   	//post: places players on the map
+   
+   //post: places players on the map
 	public void playerPlacement() {
 		for(int c = 0; c < players.size(); c++) {
 			int x = (int)(Math.random() * map.length);
@@ -177,6 +289,23 @@ public class GUI extends JPanel {
 		}
 	}
    
+   //post: places food on the map
+   public void foodPlacement()
+   {
+      for(int i=0; i<3; i++)
+      {
+         int x = (int)(Math.random() * map[0].length);
+			int y = (int)(Math.random() * map.length);
+         while(x<0||x>=map[0].length||y<0||y>=map.length||getSpace(x, y)!=0)
+         {
+            x = (int)(Math.random() * map[0].length);
+			   y = (int)(Math.random() * map.length);
+         }
+         cells[y][x]=3;
+         map[y][x].setBackground(new Color (255, 178, 102));
+      }
+   }
+   
    //method of playerPlacement()
 	//post: returns if there is a player within a 5x5 square of the given coordinates
 	private boolean detectPlayers(int x, int y) {
@@ -191,39 +320,31 @@ public class GUI extends JPanel {
 		
 		return false;
 	}
-	
-	public void foodPlacement()
-	{
-		for(int i = 0; i < 3; i++)
-		{
-			int x = (int)(Math.random() * map[0].length);
-			int y = (int)(Math.random() * map.length);
-			while(x < 0 || x >= map[0].length || y < 0 || y >= map.length || getSpace(x, y) != 0)
-			{
-				x = (int)(Math.random() * map[0].length);
-				y = (int)(Math.random() * map.length);
-			}
-			cells[y][x] = 3;
-			map[y][x].setBackground(new Color (255, 178, 102));
-		}
-	}
-	
-	public int getSpace(int x, int y)
-	{
-		if(x >= 0 && x < map[0].length && y >= 0 && y < map.length)
-			return cells[y][x];
-		else
-			return -1;
-	}
+   
+   public boolean fightingDistance(int x, int y, int otherX, int otherY)
+   {
+      if((x+1==otherX&&y==otherY)||(x-1==otherX&&y==otherY)||(y+1==otherY&&x==otherX)||(y-1==otherY&&x==otherX)||(x-1==otherX&&y-1==otherY)||(x-1==otherX&&y+1==otherY)||(x+1==otherX&&y-1==otherY)||(x+1==otherX&&y+1==otherY))
+         return true;
+      else 
+         return false;
+   }
+   
+   public int getSpace(int x, int y)
+   {
+      if(x>=0&&x<map[0].length&&y>=0&&y<map.length)
+         return cells[y][x];
+      else
+         return -1;
+   }
    
 	//post: returns an array of the player names
 	public String[] playerNameList() {
-		String[] n = new String[players.size() + 1];
-		n[0] = "Number of players left: " + countAlive();
+		String[] n = new String[players.size()+1];
+      n[0]="Number of players left: " + countAlive();
 		for(int c = 1; c < players.size(); c++) {
 			n[c] = players.get(c).toString();
 		}
-
+		
 		return n;
 	}
 	
@@ -389,61 +510,6 @@ public class GUI extends JPanel {
 		return count;
 	}
 	
-	//creates a key for the various colors in the grid
-   public void keyCreation()
-   {
-      JButton [] cList=new JButton[8];
-      JLabel [] cKey=new JLabel[8];
-      
-      cList[0]=new JButton();
-      cList[0].setBackground(new Color(47, 230, 36));
-      cKey[0]=new JLabel("Grass");
-      keyPanel.add(cList[0]);
-      keyPanel.add(cKey[0]);
-      
-      cList[1]=new JButton();
-      cList[1].setBackground(new Color(26, 23, 224));
-      cKey[1]=new JLabel("Water");
-      keyPanel.add(cList[1]);
-      keyPanel.add(cKey[1]);
-      
-      cList[2]=new JButton();
-      cList[2].setBackground(new Color (255, 178, 102));
-      cKey[2]=new JLabel("Food");
-      keyPanel.add(cList[2]);
-      keyPanel.add(cKey[2]);
-      
-      cList[3]=new JButton();
-      cList[3].setBackground(new Color(139, 69, 19));
-      cKey[3]=new JLabel("Trees");
-      keyPanel.add(cList[3]);
-      keyPanel.add(cKey[3]);
-      
-      cList[4]=new JButton();
-      cList[4].setBackground(Color.red);
-      cKey[4]=new JLabel("Dagger Player");
-      keyPanel.add(cList[4]);
-      keyPanel.add(cKey[4]);
-      
-      cList[5]=new JButton();
-      cList[5].setBackground(new Color(0, 255, 255));
-      cKey[5]=new JLabel("Sword and Shield Player");
-      keyPanel.add(cList[5]);
-      keyPanel.add(cKey[5]);
-      
-      cList[6]=new JButton();
-      cList[6].setBackground(Color.white);
-      cKey[6]=new JLabel("Two Handed Sword Player");
-      keyPanel.add(cList[6]);
-      keyPanel.add(cKey[6]);
-      
-      cList[7]=new JButton();
-      cList[7].setBackground(Color.black);
-      cKey[7]=new JLabel("Dead Player");
-      keyPanel.add(cList[7]);
-      keyPanel.add(cKey[7]);
-   }
-	
 	//reset button
 	private class Reset implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -458,8 +524,9 @@ public class GUI extends JPanel {
 				}
 			} //clears map
 			waterPlacement(); //generates bodies of water
-			treePlacement(); //generates trees
-			playerPlacement(); //generates player
+			playerPlacement();
+         treePlacement();
+         foodPlacement();
 		}
 	}
 }

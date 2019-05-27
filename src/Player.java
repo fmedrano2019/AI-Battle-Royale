@@ -10,6 +10,7 @@ public abstract class Player {
    public int x;
    public int y;
 	public boolean isAlive;
+   public boolean active;
 	
 	/** CONSTRUCTORS **/
 	
@@ -23,6 +24,7 @@ public abstract class Player {
 		water = 50;
 		energy = food + water;
 		isAlive = true;
+      active = true;
 	}
    
    //constructor with coordinate
@@ -37,6 +39,7 @@ public abstract class Player {
       this.x=x;
       this.y=y;
 		isAlive = true;
+      active = true; 
 	}
 	
 	/** ACCESSORS **/
@@ -161,14 +164,26 @@ public abstract class Player {
    }
 	
 	//post: returns isAlive
-	public boolean getIsAlive() {
+	public boolean isAlive() {
 		return isAlive;
 	}
 	
 	//post: sets isAlive
-	public void setIsAlive(boolean a) {
+	public void setAlive(boolean a) {
 		isAlive = a;
 	}
+   
+   //post: returns true if the player has not done something that turn yet, false if they have
+   public boolean isActive()
+   {
+      return active;
+   }
+   
+   //post: sets active to boolean a
+   public void setActive(boolean a)
+   {
+      active=a;
+   }
    
    public int superiorType(Player other)
    {
@@ -188,7 +203,7 @@ public abstract class Player {
       int typeWinner=superiorType(other);
       
       score+=typeWinner;
-      score+=typeWinner;
+      otherScore+=typeWinner;
       
       double energyDifference=0;
       if(energy>other.getEnergy())
@@ -196,15 +211,23 @@ public abstract class Player {
       else
          energyDifference=other.getEnergy()-energy;
         
-      
-      
+      energyDifference=Math.exp(energyDifference);
+      energyDifference=Math.pow(energyDifference, 1.0/45.0);
+        
       score+=energyDifference;
       otherScore-=energyDifference;
       
-      if(score>=otherScore)
-         other.setIsAlive(false);
+      double xpDifference=0;
+      if(xp>other.getXP())
+         xpDifference=xp-other.getXP();
       else
-         setIsAlive(false);
+         xpDifference=other.getXP()-xp;
+        
+      xpDifference=Math.exp(xpDifference);
+      xpDifference=Math.pow(xpDifference, 1.0/60.0);
+        
+      score+=xpDifference;
+      otherScore-=xpDifference;
          
       return score>=otherScore;
    }
