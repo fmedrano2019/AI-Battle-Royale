@@ -83,6 +83,10 @@ public class GUI extends JPanel {
 		final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
 		ses.scheduleWithFixedDelay(new Runnable() {
 			public void run() {
+				for(int j = 0; j < players.size(); j++) {
+					if(players.get(j).getFood() <= 0 || players.get(j).getWater() <= 0 || players.get(j).getEnergy() <= 0)
+						players.get(j).setAlive(false);
+				}
 				for(int i=0; i<players.size(); i++) //entire loop for players fighting each other
 				{
 					for(int j=0; j<players.size(); j++)
@@ -94,18 +98,14 @@ public class GUI extends JPanel {
 								if(players.get(j).isWinner(players.get(i)))
 								{
 									players.get(i).setAlive(false);
-									players.get(i).setActive(false);
 									players.get(j).setActive(false);
-									map[players.get(i).getY()][players.get(i).getX()].setBackground(Color.black);
-									players.get(j).setXP(players.get(j).getXP()+100);
+									players.get(j).setXP(players.get(j).getXP()+50);
 								}
 								else 
 								{
 									players.get(j).setAlive(false);
-									players.get(j).setActive(false);
 									players.get(i).setActive(false);
-									map[players.get(j).getY()][players.get(j).getX()].setBackground(Color.black);
-									players.get(i).setXP(players.get(i).getXP()+100);
+									players.get(i).setXP(players.get(i).getXP()+50);
 								}
 							}
 						}
@@ -132,15 +132,16 @@ public class GUI extends JPanel {
 				
 				for(int i=0; i<players.size(); i++) //makes players active for the next turn
 				{
-					if(players.get(i).isAlive())
+					if(players.get(i).isAlive()) {
 						players.get(i).setActive(true);
-					players.get(i).setXP(players.get(i).getXP()+1);
-					players.get(i).setFood(players.get(i).getFood()-1);
-					players.get(i).setWater(players.get(i).getWater()-1);
+						players.get(i).setXP(players.get(i).getXP()+1);
+						players.get(i).setFood(players.get(i).getFood()-1);
+						players.get(i).setWater(players.get(i).getWater()-1);
+					}
 				}
 				System.out.println(new Date()); //debugging
 			}
-		}, 0, 2, TimeUnit.SECONDS);
+		}, 0, 1, TimeUnit.SECONDS);
 	}
 
 	//post: generates 10-15 bodies of water
