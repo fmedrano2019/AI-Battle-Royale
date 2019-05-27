@@ -128,7 +128,7 @@ public class GUI extends JPanel {
 				//eat, drink, move time
 
 				foodPlacement();
-				playerNames.setListData(aliveUpdater());
+				playerNames.setListData(playerNameList());
 				
 				for(int i=0; i<players.size(); i++) //makes players active for the next turn
 				{
@@ -293,17 +293,6 @@ public class GUI extends JPanel {
 			n[c] = players.get(c).toString();
 		}
 
-		return n;
-	}
-	
-	public String[] aliveUpdater() {
-		ListModel<String> t = playerNames.getModel();
-		String[] n = new String[players.size() + 1];
-		n[0] = "Number of players left: " + countAlive();
-		for(int c = 1; c < t.getSize(); c++) {
-			n[c] = t.getElementAt(c);
-		}
-		
 		return n;
 	}
 
