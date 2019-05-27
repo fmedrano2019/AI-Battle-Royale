@@ -636,7 +636,7 @@ public class GUI extends JPanel {
 										players.get(j).setXP(players.get(j).getXP()+50);
 										players.get(j).setWater(players.get(j).getWater()-15);
 										players.get(j).setFood(players.get(j).getFood()-10);
-
+										players.get(j).setKills(players.get(j).getKills() + 1);
 									}
 									else 
 									{
@@ -645,6 +645,7 @@ public class GUI extends JPanel {
 										players.get(i).setXP(players.get(i).getXP()+50);
 										players.get(i).setWater(players.get(i).getWater()-15);
 										players.get(i).setFood(players.get(i).getFood()-10);
+										players.get(i).setKills(players.get(i).getKills() + 1);
 									}
 								}
 							}
