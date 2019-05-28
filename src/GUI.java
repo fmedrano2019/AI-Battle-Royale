@@ -87,10 +87,14 @@ public class GUI extends JPanel {
 			public void run() {
 				for(int j = 0; j < players.size(); j++) {
 					if(players.get(j).getFood() <= 0 || players.get(j).getWater() <= 0 || players.get(j).getEnergy() <= 0)
+               {
 						players.get(j).setAlive(false);
+                  cells[players.get(j).getY()][players.get(j).getX()] = 7;
+			         map[players.get(j).getY()][players.get(j).getX()].setBackground(Color.black);
+               }
 				}
              
-            
+            /*
 				for(int i=0; i<players.size(); i++) //entire loop for players fighting each other
 				{
 					for(int j=0; j<players.size(); j++)
@@ -121,7 +125,9 @@ public class GUI extends JPanel {
 						}
 					}
 				}
-
+            */
+            
+            /*
 				for(int c=0; c<players.size(); c++)
 				{
 					if(players.get(c).isActive())
@@ -138,20 +144,12 @@ public class GUI extends JPanel {
 						}
 					}
 				}
+            */
 				
-				for(int c = 0; c < players.size(); c++) {
-					int movement = (int)(Math.random() * 4 + 1);
-					if(players.get(c).isActive()) {
-						if(movement == 1)
-							players.get(c).moveUp();
-						else if(movement == 2)
-							players.get(c).moveDown();
-						else if(movement == 3)
-							players.get(c).moveLeft();
-						else
-							players.get(c).moveRight();
-					}
-				}
+				for(int c = 0; c < players.size(); c++) 
+				{
+               players.get(c).decision();
+            }
 
 				foodPlacement();
 				playerNames.setListData(playerNameList());
@@ -173,7 +171,7 @@ public class GUI extends JPanel {
 					ses.shutdown();
 				}
 			}
-		}, 0, 200, TimeUnit.MILLISECONDS);
+		}, 0, 2, TimeUnit.SECONDS);
 	}
 
 	//post: generates 10-15 bodies of water
@@ -206,7 +204,7 @@ public class GUI extends JPanel {
 		}
 	}
 
-	public boolean detectWater(int x, int y)
+	public static boolean detectWater(int x, int y)
 	{
 		for(int r = y - 1; r <= y + 1; r++) {
 			for(int c = x - 1; c <= x + 1; c++) {
