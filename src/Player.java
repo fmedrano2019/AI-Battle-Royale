@@ -399,7 +399,65 @@ public abstract class Player {
 					}
 				}
          }
+         else
+         {
+            ArrayList<int[]> nearbyWater = new ArrayList<int[]>();
+            for(int c = 0; c < nearby.length; c++) { //checks if there's water in sight
+               if(nearby[c][2] == 3)
+                  nearbyWater.add(new int[]{nearby[c][0], nearby[c][1]});
+            }
+            if(nearbyWater.size()>=1) //nearby water is located
+            {
+               int xMinDifference=Math.abs(x-nearbyWater.get(0)[0]);
+               int yMinDifference=Math.abs(y-nearbyWater.get(0)[1]);
+               int distance=xMinDifference+yMinDifference;
+               int xMin=nearbyWater.get(0)[0];
+               int yMin=nearbyWater.get(0)[1];
+               for(int i=1; i<nearbyWater.size(); i++)
+               {
+                  xMinDifference=Math.abs(x-nearbyWater.get(i)[0]);
+                  yMinDifference=Math.abs(y-nearbyWater.get(i)[1]);
+                  if(xMinDifference+yMinDifference<distance)
+                  {
+                     xMin=nearbyWater.get(i)[0];
+                     yMin=nearbyWater.get(i)[1];
+                     distance=xMinDifference+yMinDifference;
+                  }
+               }
+               if(xMinDifference<yMinDifference)
+               {
+                  if(xMin<x)
+                     moveLeft();
+                  else
+                     moveRight();
+               }
+               else
+               {
+                  if(yMin<y)
+                     moveUp();
+                  else
+                     moveDown();
+               }
+            }
+               
+            else //there is no nearby water, the player moves randomly
+            {
+					int movement = (int)(Math.random() * 4 + 1);
+					if(active) 
+               {
+						if(movement == 1)
+							moveUp();
+						else if(movement == 2)
+							moveDown();
+						else if(movement == 3)
+							moveLeft();
+						else
+							moveRight();
+               }
+				}
+			}
       }
+      else if(
    }
          
 	
