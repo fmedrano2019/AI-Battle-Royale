@@ -9,6 +9,10 @@ public class GUI extends JPanel {
 	//area
 	private static JButton[][] map;
 	private static int[][] cells;
+	private static final int PLAYER_NUMBER = 50;
+	private static final int MAP_SIDE_LENGTH = 100;
+	private static final int RUNTIME = 250;
+	
 	/**
 	 * 0 = grass ; Color(47, 230, 36)
 	 * 1 = water ; Color(26, 23, 224)
@@ -38,10 +42,10 @@ public class GUI extends JPanel {
 		setLayout(new BorderLayout());
 
 		JPanel area = new JPanel(); //main battle area
-		area.setLayout(new GridLayout(100, 100));
+		area.setLayout(new GridLayout(MAP_SIDE_LENGTH, MAP_SIDE_LENGTH));
 		add(area, BorderLayout.CENTER);
-		map = new JButton[100][100];
-		cells = new int[100][100];
+		map = new JButton[MAP_SIDE_LENGTH][MAP_SIDE_LENGTH];
+		cells = new int[MAP_SIDE_LENGTH][MAP_SIDE_LENGTH];
 
 		for(int r = 0; r < map.length; r++) {
 			for(int c = 0; c < map[0].length; c++) {
@@ -70,7 +74,8 @@ public class GUI extends JPanel {
 		leaderboard.setLayout(new BorderLayout());
 		add(leaderboard, BorderLayout.EAST);
 
-		playerNames = new JList<String>(playerNameList());
+		String[] temp = playerNameList();
+		playerNames = new JList<String>(temp);
 		leaderboard.add(playerNames, BorderLayout.NORTH);
 
 		keyPanel=new JPanel(); //color key
@@ -85,70 +90,43 @@ public class GUI extends JPanel {
 		ses = Executors.newSingleThreadScheduledExecutor();
 		ses.scheduleWithFixedDelay(new Runnable() {
 			public void run() {
-				for(int j = 0; j < players.size(); j++) {
-					if(players.get(j).getFood() <= 0 || players.get(j).getWater() <= 0 || players.get(j).getEnergy() <= 0) { //if the player has no food/water/energy, they die
-						players.get(j).setAlive(false);
-						cells[players.get(j).getY()][players.get(j).getX()] = 7;
-						map[players.get(j).getY()][players.get(j).getX()].setBackground(Color.black);
-					}
-				}
-
-				for(int c = 0; c < players.size(); c++) {
-					if(players.get(c).isAlive()) {
-						players.get(c).decision();
-					}
-				}
-				/*
-				for(int i=0; i<players.size(); i++) //entire loop for players fighting each other
-				{
-					for(int j=0; j<players.size(); j++)
-					{
-						if(players.get(i).isActive()&&players.get(j).isActive())
-						{
-							if(fightingDistance(players.get(j).getX(), players.get(j).getY(), players.get(i).getX(), players.get(i).getY()))
-							{
-								if(players.get(j).isWinner(players.get(i)))
-								{
-									players.get(i).setAlive(false);
-									players.get(j).setActive(false);
-									players.get(j).setXP(players.get(j).getXP()+50);
-									players.get(j).setWater(players.get(j).getWater()-15);
-									players.get(j).setFood(players.get(j).getFood()-10);
-									players.get(j).setKills(players.get(j).getKills() + 1);
-								}
-								else 
-								{
-									players.get(j).setAlive(false);
-									players.get(i).setActive(false);
-									players.get(i).setXP(players.get(i).getXP()+50);
-									players.get(i).setWater(players.get(i).getWater()-15);
-									players.get(i).setFood(players.get(i).getFood()-10);
-									players.get(i).setKills(players.get(i).getKills() + 1);
-								}
-							}
+				try {
+					for(int j = 0; j < players.size(); j++) {
+						if(players.get(j).getFood() <= 0 || players.get(j).getWater() <= 0 || players.get(j).getEnergy() <= 0) { //if the player has no food/water/energy, they die
+							players.get(j).setAlive(false);
+							cells[players.get(j).getY()][players.get(j).getX()] = 7;
+							map[players.get(j).getY()][players.get(j).getX()].setBackground(Color.black);
 						}
 					}
-				}*/
 
-				foodPlacement();
-				playerNames.setListData(playerNameList()); //updates list
-				
-				for(int i = 0; i < players.size(); i++) { //makes players active for the next turn
-					if(players.get(i).isAlive()) {
-						players.get(i).setActive(true);
-						players.get(i).setXP(players.get(i).getXP()+1);
-						players.get(i).setFood(players.get(i).getFood()-1);
-						players.get(i).setWater(players.get(i).getWater()-1);
+					for(int c = 0; c < players.size(); c++) {
+						if(players.get(c).isAlive()) {
+							players.get(c).decision();
+						}
 					}
-				}
 
-				if(countAlive()<=1) {
-					String winner = determineWinner();
-					JOptionPane.showMessageDialog(null, winner);
-					ses.shutdown();
+					foodPlacement();
+					playerNames.setListData(playerNameList()); //updates list
+
+					for(int i = 0; i < players.size(); i++) { //makes players active for the next turn
+						if(players.get(i).isAlive()) {
+							players.get(i).setActive(true);
+							players.get(i).setXP(players.get(i).getXP()+1);
+							players.get(i).setFood(players.get(i).getFood()-1);
+							players.get(i).setWater(players.get(i).getWater()-1);
+						}
+					}
+
+					if(countAlive()<=1) {
+						String winner = determineWinner();
+						JOptionPane.showMessageDialog(null, winner);
+						ses.shutdown();
+					}
+				} catch (Throwable e) {
+					e.printStackTrace();
 				}
 			}
-		}, 0, 1, TimeUnit.SECONDS);
+		}, 0, RUNTIME, TimeUnit.MILLISECONDS);
 	}
 
 	//post: generates 10-15 bodies of water
@@ -320,7 +298,11 @@ public class GUI extends JPanel {
 	public static Player getPlayer(int x, int y) {
 		for(int c = 0; c < players.size(); c++) {
 			if(players.get(c).getX() == x && players.get(c).getY() == y)
-				return players.get(c);
+				if (players.get(c).isAlive) {
+					return players.get(c);
+				} else {
+					return null;
+				}
 		}
 		
 		return null;
@@ -330,8 +312,8 @@ public class GUI extends JPanel {
 	public String[] playerNameList() {
 		String[] n = new String[players.size() + 1];
 		n[0] = "Number of players left: " + countAlive();
-		for(int c = 1; c < players.size(); c++) {
-			n[c] = players.get(c).toString();
+		for(int c = 0; c < players.size(); c++) {
+			n[c + 1] = players.get(c).toString();
 		}
 
 		return n;
@@ -457,7 +439,7 @@ public class GUI extends JPanel {
 
 	//post: creates 25 players
 	public void playerCreation() {
-		for(int c = 0; c < 25; c++) { //adds 20 players
+		for(int c = 0; c < PLAYER_NUMBER; c++) { //adds 20 players
 			String firstName = firstNameGen.get((int)(Math.random() * firstNameGen.size()));
 			String lastName = lastNameGen.get((int)(Math.random() * lastNameGen.size()));
 			String name = firstName + " " + lastName;
@@ -594,68 +576,43 @@ public class GUI extends JPanel {
 			ses = Executors.newSingleThreadScheduledExecutor();
 			ses.scheduleWithFixedDelay(new Runnable() {
 				public void run() {
-					for(int j = 0; j < players.size(); j++) {
-						if(players.get(j).getFood() <= 0 || players.get(j).getWater() <= 0 || players.get(j).getEnergy() <= 0) //if the player has no food/water/energy, they die
-							players.get(j).setAlive(false);
-					}
-					
-					for(int c = 0; c < players.size(); c++) {
-						if(players.get(c).isAlive()) {
-							players.get(c).sight();
-							players.get(c).decision();
-						}
-					}
-					/*
-					for(int i=0; i<players.size(); i++) //entire loop for players fighting each other
-					{
-						for(int j=0; j<players.size(); j++)
-						{
-							if(players.get(i).isActive()&&players.get(j).isActive())
-							{
-								if(fightingDistance(players.get(j).getX(), players.get(j).getY(), players.get(i).getX(), players.get(i).getY()))
-								{
-									if(players.get(j).isWinner(players.get(i)))
-									{
-										players.get(i).setAlive(false);
-										players.get(j).setActive(false);
-										players.get(j).setXP(players.get(j).getXP()+50);
-										players.get(j).setWater(players.get(j).getWater()-15);
-										players.get(j).setFood(players.get(j).getFood()-10);
-										players.get(j).setKills(players.get(j).getKills() + 1);
-									}
-									else 
-									{
-										players.get(j).setAlive(false);
-										players.get(i).setActive(false);
-										players.get(i).setXP(players.get(i).getXP()+50);
-										players.get(i).setWater(players.get(i).getWater()-15);
-										players.get(i).setFood(players.get(i).getFood()-10);
-										players.get(i).setKills(players.get(i).getKills() + 1);
-									}
-								}
+					try {
+						for(int j = 0; j < players.size(); j++) {
+							if(players.get(j).getFood() <= 0 || players.get(j).getWater() <= 0 || players.get(j).getEnergy() <= 0) { //if the player has no food/water/energy, they die
+								players.get(j).setAlive(false);
+								cells[players.get(j).getY()][players.get(j).getX()] = 7;
+								map[players.get(j).getY()][players.get(j).getX()].setBackground(Color.black);
 							}
 						}
-					}*/
 
-					foodPlacement();
-					playerNames.setListData(playerNameList()); //updates list
-					
-					for(int i = 0; i < players.size(); i++) { //makes players active for the next turn
-						if(players.get(i).isAlive()) {
-							players.get(i).setActive(true);
-							players.get(i).setXP(players.get(i).getXP()+1);
-							players.get(i).setFood(players.get(i).getFood()-1);
-							players.get(i).setWater(players.get(i).getWater()-1);
+						for(int c = 0; c < players.size(); c++) {
+							if(players.get(c).isAlive()) {
+								players.get(c).decision();
+							}
 						}
-					}
 
-					if(countAlive()<=1) {
-						String winner = determineWinner();
-						JOptionPane.showMessageDialog(null, winner);
-						ses.shutdown();
+						foodPlacement();
+						playerNames.setListData(playerNameList()); //updates list
+
+						for(int i = 0; i < players.size(); i++) { //makes players active for the next turn
+							if(players.get(i).isAlive()) {
+								players.get(i).setActive(true);
+								players.get(i).setXP(players.get(i).getXP()+1);
+								players.get(i).setFood(players.get(i).getFood()-1);
+								players.get(i).setWater(players.get(i).getWater()-1);
+							}
+						}
+
+						if(countAlive()<=1) {
+							String winner = determineWinner();
+							JOptionPane.showMessageDialog(null, winner);
+							ses.shutdown();
+						}
+					} catch (Throwable e) {
+						e.printStackTrace();
 					}
 				}
-			}, 0, 1, TimeUnit.SECONDS);
+			}, 0, RUNTIME, TimeUnit.MILLISECONDS);
 		}
 	}
 }
