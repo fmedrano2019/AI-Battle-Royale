@@ -9,9 +9,9 @@ public class GUI extends JPanel {
 	//area
 	private static JButton[][] map;
 	private static int[][] cells;
-	private static final int PLAYER_NUMBER = 50;
+	private static final int PLAYER_NUMBER = 25;
 	private static final int MAP_SIDE_LENGTH = 100;
-	private static final int RUNTIME = 250;
+	private static final int RUNTIME = 200;
 	
 	/**
 	 * 0 = grass ; Color(47, 230, 36)
@@ -36,7 +36,7 @@ public class GUI extends JPanel {
 	private ArrayList<String> lastNameGen=new ArrayList<String>(); //last name generator
 	private ArrayList<String> typeGen = new ArrayList<String>(); //type generator
 
-	ScheduledExecutorService ses;
+	ScheduledExecutorService ses; 
 	
 	public GUI() {
 		setLayout(new BorderLayout());
@@ -88,7 +88,7 @@ public class GUI extends JPanel {
 		leaderboard.add(reset, BorderLayout.SOUTH);
 		
 		ses = Executors.newSingleThreadScheduledExecutor();
-		ses.scheduleWithFixedDelay(new Runnable() {
+		ses.scheduleWithFixedDelay(new Runnable() { //repeats tasks such as player actions and placing food every set amount of time to imitate turns
 			public void run() {
 				try {
 					for(int j = 0; j < players.size(); j++) {
@@ -101,28 +101,29 @@ public class GUI extends JPanel {
 
 					for(int c = 0; c < players.size(); c++) {
 						if(players.get(c).isAlive()) {
-							players.get(c).decision();
+							players.get(c).decision(); //player either eats, drinks, or moves if they are alive
 						}
 					}
 
-					foodPlacement();
+					foodPlacement(); //places food on the map every turn
 					playerNames.setListData(playerNameList()); //updates list
 
 					for(int i = 0; i < players.size(); i++) { //makes players active for the next turn
 						if(players.get(i).isAlive()) {
-							players.get(i).setActive(true);
-							players.get(i).setXP(players.get(i).getXP()+1);
-							players.get(i).setFood(players.get(i).getFood()-1);
-							players.get(i).setWater(players.get(i).getWater()-1);
+							players.get(i).setActive(true); 
+							players.get(i).setXP(players.get(i).getXP()+1); //increment xp of every alive player each turn
+							players.get(i).setFood(players.get(i).getFood()-1); //decrements food of every alive player each turn
+							players.get(i).setWater(players.get(i).getWater()-1); //decrements water of every alive player each turn
 						}
 					}
 
-					if(countAlive()<=1) {
+					if(countAlive()<=1) { //game ends when there are 1 or less players alive and a pop-up window emerges
 						String winner = determineWinner();
 						JOptionPane.showMessageDialog(null, winner);
 						ses.shutdown();
 					}
-				} catch (Throwable e) {
+				} 
+            catch (Throwable e) { 
 					e.printStackTrace();
 				}
 			}
@@ -138,7 +139,7 @@ public class GUI extends JPanel {
 	}
 
 	//method of waterPlacement()
-	//post: generates a 5x5 to 8x8 body of water
+	//post: generates a body of water between a 5x5 to 8x8 size
 	private void waterBodyGen() {
 		int x = (int)(Math.random() * map[0].length);
 		int y = (int)(Math.random() * map.length);
@@ -159,6 +160,7 @@ public class GUI extends JPanel {
 		}
 	}
 
+   //post: returns true if there is water a block away from the given coordinates, false otherwise
 	public static boolean detectWater(int x, int y)
 	{
 		for(int r = y - 1; r <= y + 1; r++) {
@@ -173,7 +175,7 @@ public class GUI extends JPanel {
 		return false;
 	}
 
-	//generates 15 - 20 tree bodies
+	//post: generates 15 - 20 tree bodies
 	public void treePlacement() {
 		int num = (int)(Math.random() * 6 + 15); //number of bodies of trees 15-20
 		for(int c = 0; c < num; c++) {
@@ -182,14 +184,14 @@ public class GUI extends JPanel {
 	}
 
 	//method of treePlacement()
-	//post: generates a 3/6x3/6 tree block
+	//post: generates a tree block of 2x2 to 6x6 size
 	private void treeBodyGen() {
 		int x = (int)(Math.random() * map[0].length);
 		int y = (int)(Math.random() * map.length);
-		int xSize = (int)(Math.random() * 5 + 3); //2 - 6 width
-		int ySize = (int)(Math.random() * 5 + 3); //2 - 6 height
+		int xSize = (int)(Math.random() * 5 + 2); //2 - 6 width
+		int ySize = (int)(Math.random() * 5 + 2); //2 - 6 height
 		while(ySize == xSize) {
-			ySize = (int)(Math.random() * 5 + 3); //2 - 6 height
+			ySize = (int)(Math.random() * 5 + 2); //2 - 6 height
 		}
 		while(x < 0 || x >= map.length || y < 0 || y >= map[0].length) { //checks if coordinates are within bounds
 			x = (int)(Math.random() * map.length);
@@ -198,7 +200,7 @@ public class GUI extends JPanel {
 
 		for(int r = y; r < y + ySize; r++) {
 			for(int c = x ; c < x + xSize; c++) {
-				if(r < map.length && c < map[0].length && getSpace(c, r) != 1) { //checks if r & c are within bounds
+				if(r < map.length && c < map[0].length && getSpace(c, r) != 1) { //checks if r & c are within bounds and that there is no water there
 					map[r][c].setBackground(new Color(139, 69, 19));
 					cells[r][c] = 2;
 				}
@@ -216,19 +218,19 @@ public class GUI extends JPanel {
 				y = (int)(Math.random() * map[0].length);
 			} //generates new coordinates
 
-			if(players.get(c).getType().equals("Dagger"))
+			if(players.get(c).getType().equals("Dagger")) //places a dagger player
 			{
 				cells[y][x] = 4;
 				map[y][x].setBackground(Color.red);
 				players.set(c, new Dagger(players.get(c).getName(), x, y));
 			}
-			else if(players.get(c).getType().equals("S&S"))
+			else if(players.get(c).getType().equals("S&S")) //places a sword and shield player
 			{
 				cells[y][x] = 5;
 				map[y][x].setBackground(new Color(0, 255, 255));
 				players.set(c, new SwordAndShield(players.get(c).getName(), x, y));
 			}
-			else
+			else //places a two-handed sword player
 			{
 				cells[y][x] = 6;
 				map[y][x].setBackground(Color.white);
@@ -238,7 +240,7 @@ public class GUI extends JPanel {
 	}
 
 	//method of playerPlacement()
-	//post: returns if there is a player within a 5x5 square of the given coordinates
+	//post: returns true if there is a player within a 11x11 square of the given coordinates, false otherwise
 	public boolean detectPlayers(int x, int y) {
 		for(int r = y - 5; r <= y + 5; r++) {
 			for(int c = x - 5; c <= x + 5; c++) {
@@ -252,13 +254,14 @@ public class GUI extends JPanel {
 		return false;
 	}
 	
+   //post: places 2 food blocks on the map
 	public void foodPlacement()
 	{
-		for(int i = 0; i < 3; i++)
+		for(int i = 0; i < 2; i++)
 		{
 			int x = (int)(Math.random() * map[0].length);
 			int y = (int)(Math.random() * map.length);
-			while(x < 0 || x >= map[0].length || y < 0 || y >= map.length || getSpace(x, y) != 0)
+			while(x < 0 || x >= map[0].length || y < 0 || y >= map.length || getSpace(x, y) != 0) //checks if the x and y coordinate are in bounds and updates if necessary
 			{
 				x = (int)(Math.random() * map[0].length);
 				y = (int)(Math.random() * map.length);
@@ -268,15 +271,16 @@ public class GUI extends JPanel {
 		}
 	}
 	
+   //post: returns true if there is food a block away from the given coordinates, false otherwise
 	public static boolean detectFood(int x, int y)
 	{
 		for(int r = y - 1; r <= y + 1; r++) {
 			for(int c = x - 1; c <= x + 1; c++) {
 				if(r >= 0 && r < map.length && c >= 0 && c < map[0].length) { //checks if r & c are within bounds
-					if(cells[r][c] == 3) //if there is food
+					if(cells[r][c] == 3) //if there is food, it is "eaten" and the food block becomes grass
 					{
-						map[r][c].setBackground(new Color(47, 230, 36));
-						cells[r][c]=0;
+						map[r][c].setBackground(new Color(47, 230, 36)); //updates to grass block
+						cells[r][c]=0; //updates to grass block
 						return true;
 					}
 				}
@@ -286,21 +290,23 @@ public class GUI extends JPanel {
 		return false;
 	}
 
-	//post: returns the value in cells at parameter coordinates
+	//post: returns the value in cells at parameter coordinates, -1 if out of bounds
 	public static int getSpace(int x, int y)
 	{
-		if(x >= 0 && x < map[0].length && y >= 0 && y < map.length)
+		if(x >= 0 && x < map[0].length && y >= 0 && y < map.length) //checks if x and y are in bounds
 			return cells[y][x];
 		else
 			return -1;
 	}
 	
+   //post: returns the player with the coordinates given as parameters
 	public static Player getPlayer(int x, int y) {
 		for(int c = 0; c < players.size(); c++) {
-			if(players.get(c).getX() == x && players.get(c).getY() == y)
+			if(players.get(c).getX() == x && players.get(c).getY() == y) //checks if the player's coordinates match that of the parameter's
 				if (players.get(c).isAlive) {
 					return players.get(c);
-				} else {
+				} 
+            else { //given player is dead
 					return null;
 				}
 		}
@@ -308,10 +314,10 @@ public class GUI extends JPanel {
 		return null;
 	}
 
-	//post: returns an array of the player names
+	//post: returns an array of the number of players alive and player names
 	public String[] playerNameList() {
-		String[] n = new String[players.size() + 1];
-		n[0] = "Number of players left: " + countAlive();
+		String[] n = new String[players.size() + 1]; 
+		n[0] = "Number of players left: " + countAlive(); //leaderboard shows the number of players alive
 		for(int c = 0; c < players.size(); c++) {
 			n[c + 1] = players.get(c).toString();
 		}
@@ -319,7 +325,7 @@ public class GUI extends JPanel {
 		return n;
 	}
 
-	//first name generator
+	//post: adds first names to a first name bank
 	public void firstNameGen() { 
 		firstNameGen.add("John");
 		firstNameGen.add("Nikhil");
@@ -374,7 +380,7 @@ public class GUI extends JPanel {
 		firstNameGen.add("Fred");
 	}
 
-	//last name generator
+	//post: adds last names to a last name bank
 	public void lastNameGen()
 	{
 		lastNameGen.add("Donaldson");
@@ -430,11 +436,11 @@ public class GUI extends JPanel {
 		lastNameGen.add("Robertson");
 	}
 
-	//type generator
+	//post: adds the three different types of players to a type bank
 	public void typeGen() { 
-		typeGen.add("S&S");
-		typeGen.add("Dagger");
-		typeGen.add("2H");
+		typeGen.add("S&S"); //sword and shield
+		typeGen.add("Dagger"); //dagger
+		typeGen.add("2H"); //two handed
 	}
 
 	//post: creates 25 players
@@ -444,27 +450,16 @@ public class GUI extends JPanel {
 			String lastName = lastNameGen.get((int)(Math.random() * lastNameGen.size()));
 			String name = firstName + " " + lastName;
 
-			for(int k = 0; c < players.size(); k++) { //checks if the name is already used
-				while(firstName.equals(players.get(k).getFirstName())||lastName.equals(players.get(k).getLastName())) { //ensures there are no duplicates
-					if(firstName.equals(players.get(k).getFirstName()))
-						firstName = firstNameGen.get((int)(Math.random() * firstNameGen.size())); //generates new first name
-					if(lastName.equals(players.get(k).getLastName()))
-						lastName = lastNameGen.get((int)(Math.random() * lastNameGen.size())); //generates new last name
-					name = firstName + " " + lastName;
-					k = 0;
-				}
-			}
-
-			String type = typeGen.get((int)(Math.random() * typeGen.size()));
+			String type = typeGen.get((int)(Math.random() * typeGen.size())); //gives the player a random type
 			Player p;
 			if(type.equals("2H")) {
-				p = new TwoHanded(name);
+				p = new TwoHanded(name); //creates a two handed player
 			}
 			else if(type.equals("Dagger")) {
-				p = new Dagger(name);
+				p = new Dagger(name); //creates a dagger player
 			}
 			else {
-				p = new SwordAndShield(name);
+				p = new SwordAndShield(name); //creates a sword and shield player
 			}
 
 			players.add(p);
@@ -474,88 +469,91 @@ public class GUI extends JPanel {
 	//post: returns how many players are alive
 	public int countAlive() {
 		int count = 0;
-		for(int c = 0; c < players.size(); c++) { //iterates thru players
-			if(players.get(c).isAlive) //if they are alive
+		for(int c = 0; c < players.size(); c++) { //iterates through all players
+			if(players.get(c).isAlive) //if they are alive, count increments 
 				count++;
 		}
 
 		return count;
 	}
 
-	//creates a key for the various colors in the grid
+	//post: creates a key grid for the various colors in the map
 	public void keyCreation()
 	{
 		JButton[] cList = new JButton[8];
 		JLabel[] cKey = new JLabel[8];
 
-		cList[0]=new JButton();
+		cList[0]=new JButton(); //grass
 		cList[0].setBackground(new Color(47, 230, 36));
 		cKey[0]=new JLabel("Grass");
 		keyPanel.add(cList[0]);
 		keyPanel.add(cKey[0]);
 
-		cList[1]=new JButton();
+		cList[1]=new JButton(); //water
 		cList[1].setBackground(new Color(26, 23, 224));
 		cKey[1]=new JLabel("Water");
 		keyPanel.add(cList[1]);
 		keyPanel.add(cKey[1]);
 
 
-		cList[2]=new JButton();
+		cList[2]=new JButton(); //trees
 		cList[2].setBackground(new Color(139, 69, 19));
 		cKey[2]=new JLabel("Trees");
 		keyPanel.add(cList[2]);
 		keyPanel.add(cKey[2]);
 		
-		cList[3]=new JButton();
+		cList[3]=new JButton(); //food
 		cList[3].setBackground(new Color (255, 178, 102));
 		cKey[3]=new JLabel("Food");
 		keyPanel.add(cList[3]);
 		keyPanel.add(cKey[3]);
 
-		cList[4]=new JButton();
+		cList[4]=new JButton(); //dagger player
 		cList[4].setBackground(Color.red);
 		cKey[4]=new JLabel("Dagger Player");
 		keyPanel.add(cList[4]);
 		keyPanel.add(cKey[4]);
 
-		cList[5]=new JButton();
+		cList[5]=new JButton(); //sword and shield player
 		cList[5].setBackground(new Color(0, 255, 255));
 		cKey[5]=new JLabel("Sword and Shield Player");
 		keyPanel.add(cList[5]);
 		keyPanel.add(cKey[5]);
 
-		cList[6]=new JButton();
+		cList[6]=new JButton(); //two handed sword player
 		cList[6].setBackground(Color.white);
 		cKey[6]=new JLabel("Two Handed Sword Player");
 		keyPanel.add(cList[6]);
 		keyPanel.add(cKey[6]);
 
-		cList[7]=new JButton();
+		cList[7]=new JButton(); //dead player
 		cList[7].setBackground(Color.black);
 		cKey[7]=new JLabel("Dead Player");
 		keyPanel.add(cList[7]);
 		keyPanel.add(cKey[7]);
 	}
 
+   //post: determines the name of the winner of the battle royale, or nobody if everyone is dead
 	public String determineWinner() {
 		for(int c = 0; c < players.size(); c++) {
-			if(players.get(c).isAlive())
+			if(players.get(c).isAlive()) //finds the last player alive
 				return players.get(c).getName() + " is the winner!";
 		}
 		
 		return "Nobody won!";
 	}
 	
+   //post: returns the 2D array of all the elements in the grid
 	public static int[][] getCells(){
 		return cells;
 	}
 	
+   //post: returns the 2D array of all the elements in the map (the colors)
 	public static JButton[][] getMap(){
 		return map;
 	}
 	
-	//reset button
+	//post: creates and sets up the reset button
 	private class Reset implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			players.clear(); //clears all players

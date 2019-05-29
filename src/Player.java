@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public abstract class Player {
 	
-	private static final int SIGHT_RANGE = 15;
+	private static final int SIGHT_RANGE = 5; 
 	private static final int STARTING_FOOD = 150;
 	private static final int STARTING_WATER = 150;
 	private static final int FOOD_THRESHOLD = 50;
@@ -14,7 +14,7 @@ public abstract class Player {
 	
 	
 	
-	public String name;
+	public String name; 
 	public String type;
 	public int kills;
 	public int xp;
@@ -98,6 +98,7 @@ public abstract class Player {
 		return type;
 	}
 	
+   //post: returns the integer associated the player's type
 	public abstract int getTypeNum();
 	
 	//post: sets type
@@ -189,7 +190,7 @@ public abstract class Player {
 		int [][] cells=GUI.getCells();
 		JButton [][] map=GUI.getMap();
 		isAlive = a;
-		if(!isAlive) {
+		if(!isAlive) { //if the player is made dead, the map and element is updated at their given coordinate
 			active = false;
 			cells[y][x] = 7;
 			map[y][x].setBackground(Color.black);
@@ -206,16 +207,18 @@ public abstract class Player {
 		active = a;
 	}
 	
+   //post: returns an integer based on who is the superior type
 	public int superiorType(Player other)
 	{
-		if(type.equals(other.getType()))
+		if(type.equals(other.getType())) //equal type
 			return 0;
-		else if((type.equals("S&S")&&other.getType().equals("2H"))||(type.equals("2H")&&other.getType().equals("Dagger"))||(type.equals("Dagger")&&other.getType().equals("S&S")))
+		else if((type.equals("S&S")&&other.getType().equals("2H"))||(type.equals("2H")&&other.getType().equals("Dagger"))||(type.equals("Dagger")&&other.getType().equals("S&S"))) //superior type
 			return 50;
-		else
+		else //inferior type
 			return -50;
 	}
 	
+   //post: returns true if the coordinates are one block away from each other, false otherwise
 	public boolean fightingDistance(int x, int y, int otherX, int otherY)
 	{
 		if((x+1==otherX&&y==otherY)||(x-1==otherX&&y==otherY)||(y+1==otherY&&x==otherX)||(y-1==otherY&&x==otherX)||(x-1==otherX&&y-1==otherY)||(x-1==otherX&&y+1==otherY)||(x+1==otherX&&y-1==otherY)||(x+1==otherX&&y+1==otherY))
@@ -224,9 +227,9 @@ public abstract class Player {
 			return false;
 	}
 	
-	//for deciding whether to chase, semi-random
-	public boolean superiorType(int t) {
-		if (Math.random() < 0.3) {
+	//post: returns true if the player should chase based on superior typing, false otherwise with some probability involved
+	public boolean superiorType(int t) { //for deciding whether to chase, semi-random
+		if (Math.random() < 0.3) { //30% probability that the player chases no matter what
 			return true;
 		}
 		else if((this.getTypeNum() == 5 && t == 6) || (this.getTypeNum() == 6 && t == 4) || (this.getTypeNum() == 4 && t == 5))
@@ -235,17 +238,18 @@ public abstract class Player {
 			return false;
 	}
 
+   //post: returns true if the player beats the other player, false otherwise
 	public boolean isWinner(Player other)
 	{
-		double score=0;
-		double otherScore=0;
+		double score=0; //score of this player
+		double otherScore=0; //score of the other player
 
 		int typeWinner=superiorType(other);
 
 		score+=typeWinner;
 		otherScore+=typeWinner;
 
-		double energyDifference=0;
+		double energyDifference=0; //energy difference between the two players
 		if(energy>other.getEnergy())
 			energyDifference=energy-other.getEnergy();
 		else
@@ -254,10 +258,18 @@ public abstract class Player {
 		energyDifference=Math.exp(energyDifference);
 		energyDifference=Math.pow(energyDifference, 1.0/45.0);
 
-		score+=energyDifference;
-		otherScore-=energyDifference;
+      if(energy>other.getEnergy()) //score adjusts according to who has higher energy
+      {
+   		score+=energyDifference;
+   		otherScore-=energyDifference;
+      }
+      else
+      {
+         score-=energyDifference;
+   		otherScore+=energyDifference;
+      }
 
-		double xpDifference=0;
+		double xpDifference=0; //xp difference between the two players
 		if(xp>other.getXP())
 			xpDifference=xp-other.getXP();
 		else
@@ -266,12 +278,21 @@ public abstract class Player {
 		xpDifference=Math.exp(xpDifference);
 		xpDifference=Math.pow(xpDifference, 1.0/60.0);
 
-		score+=xpDifference;
-		otherScore-=xpDifference;
+      if(xp>other.getXP()) //score adjusts according to who has higher xp
+      {
+   		score+=xpDifference; 
+   		otherScore-=xpDifference;
+      }
+      else
+      {
+         score-=xpDifference;
+         otherScore+=xpDifference;
+      }
 
-		return score>=otherScore;
+		return score>=otherScore; //player with the higher score wins the battle, based on typing, energy, and xp
 	}
 
+   //post: moves the player up and updates the map
 	public void moveUp()
 	{  
 		int [][] cells=GUI.getCells();
@@ -286,6 +307,7 @@ public abstract class Player {
 		}
 	}
 
+   //post: moves the player down and updates the map
 	public void moveDown()
 	{
 		int [][] cells=GUI.getCells();
@@ -300,6 +322,7 @@ public abstract class Player {
 		}
 	}
 
+   //post: moves the player to the left and updates the map
 	public void moveLeft()
 	{  
 		int [][] cells=GUI.getCells();
@@ -314,6 +337,7 @@ public abstract class Player {
 		}
 	}
 
+   //post: moves the player to the right and updates the map
 	public void moveRight()
 	{
 		int [][] cells=GUI.getCells();
@@ -328,22 +352,26 @@ public abstract class Player {
 		}
 	}
 
+   //post: updates the food, energy, and xp of player after eating
 	public void eat()
 	{
-		food+=15;
-		energy+=15;
+		food+=25;
+		energy+=25;
 		xp += 5;
 	}
 
+   //post: updates the water, energy, and xp of player after drinking
 	public void drink()
 	{
-		water+=20;
-		energy+=20;
+		water+=35;
+		energy+=35;
 		xp += 10;
 	}   
 
+   //post: returns the color associated with the type of player
 	public abstract Color getColor();
 	
+   //post: returns a 2D array of the coordinates and type of element at that given coordinate in a 11x11 square from the player, essentially everything near the player
 	public int[][] sight() {
 		int [][] cells=GUI.getCells();
 		int count = 0;
@@ -361,9 +389,10 @@ public abstract class Player {
 		return nearby;
 	}
 
+   //post: the player makes a decision according to a behavior tree with thirst/hunger taking precedence, then interactions with other players, then stockpiling resources, then randomness
 	public void decision()
 	{
-		sight();
+		sight(); //player receives an idea of things nearby them
 		ArrayList<int[]> nearbyFood = new ArrayList<int[]>();
 		for(int c = 0; c < nearby.length; c++) { //checks if there's food in sight
 			if(nearby[c][2] == 3)
@@ -445,7 +474,7 @@ public abstract class Player {
 			}
 			
 			else { //if water < food
-				if(GUI.detectWater(x, y)) { //if food is right next to player
+				if(GUI.detectWater(x, y)) { //if water is right next to player, drink 
 					drink();
 				}
 				else {
@@ -548,12 +577,12 @@ public abstract class Player {
 			boolean run = false;
 			for (int c = 0; c < nearbyPlayers.size(); c++) { // checks if there's a superior player
 				if (nearbyPlayers.get(c).length > 2 && !superiorType(nearbyPlayers.get(c)[2])) {
-					run = true;
+					run = true; //sets the player in run mode if there is a nearby threat
 					break;
 				}
 			}
 
-			if(run) {
+			if(run) { //runs away from nearest threat
 				int xDifference = Math.abs(x - nearbyPlayers.get(0)[0]);
 				int yDifference = Math.abs(y - nearbyPlayers.get(0)[1]);
 				int xMinDifference = xDifference;
@@ -588,8 +617,8 @@ public abstract class Player {
 			
 			else {
 				boolean fought = false;
-				for(int c = 0; c < nearbyPlayers.size(); c++) { //iterates thru nearbyPlayers
-					if(fightingDistance(x, y, nearbyPlayers.get(c)[0], nearbyPlayers.get(c)[1])) { //if there's an immediate player
+				for(int c = 0; c < nearbyPlayers.size(); c++) { //iterates through nearbyPlayers
+					if(fightingDistance(x, y, nearbyPlayers.get(c)[0], nearbyPlayers.get(c)[1])) { //if there's an immediate player, fights them
 						Player p = GUI.getPlayer(nearbyPlayers.get(c)[0], nearbyPlayers.get(c)[1]);
 						
 						if(isWinner(p)) { //if wins
@@ -613,7 +642,7 @@ public abstract class Player {
 					}
 				}
 
-				if(!fought) {
+				if(!fought) { //chases after nearest player
 					int xDifference = Math.abs(x - nearbyPlayers.get(0)[0]);
 					int yDifference = Math.abs(y - nearbyPlayers.get(0)[1]);
 					int xMinDifference = xDifference;
@@ -652,7 +681,7 @@ public abstract class Player {
 		{
 			if(GUI.detectWater(x, y)) //if water is right next to player
 				drink();
-			else 
+			else //finds nearest water
 			{
 				int xDifference=Math.abs(x-nearbyWater.get(0)[0]);
 				int yDifference=Math.abs(y-nearbyWater.get(0)[1]);
@@ -695,7 +724,7 @@ public abstract class Player {
 		{
 			if(GUI.detectFood(x, y)) //if food is right next to player
 				eat();
-			else //if food isn't right next to player
+			else //finds nearest food
 			{
 				int xDifference=Math.abs(x-nearbyFood.get(0)[0]);
 				int yDifference=Math.abs(y-nearbyFood.get(0)[1]);
@@ -753,6 +782,7 @@ public abstract class Player {
 		active = false;
 	}
 	
+   //post: returns the toString of the player (name, type, kills, food, water, xp)
 	public String toString() {
 		return name + " (" + type + ") " + ": " + kills + " - Food: " + food + " - Water: " + water + " - XP: " + xp;
 	}
